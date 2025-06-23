@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>发布文章</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    #preview-area {
+      border: 1px solid #ccc;
+      padding: 1em;
+      margin-top: 1em;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+<h2>新建文章</h2>
+<form method="post" action="/admin/upload">
+  子目录 (content 子文件夹): <input name="subfolder" /><br />
+  文件名（无扩展名）: <input name="filename" required /><br />
+  分类（可选）: <input name="category" /><br />
+  语言:
+  <select name="lang">
+    <option value="en">English</option>
+    <option value="zh">中文</option>
+  </select><br />
+  草稿: <input type="checkbox" name="draft" value="true" /><br />
+
+  <hr />
+  <strong>Front Matter 信息</strong><br />
+  标题: <input name="title" id="title" required /><br />
+  作者: <input name="author" id="author" required /><br />
+  简介: <input name="description" id="description" /><br />
+  标签（英文逗号分隔）: <input name="tags" id="tags" /><br />
+
+  <hr />
+  <textarea name="body" id="body"></textarea><br />
+  <button type="submit">提交文章并构建</button>
+  <button type="button" onclick="previewMarkdown()">预览</button>
+  <button type="button" onclick="uploadImage()">上传图片</button>
+</form>
+
+<div id="preview-area">
+  <h3>预览效果：</h3>
+  <div id="preview-content"></div>
+</div>
+
+<script>
+  const editor = new EasyMDE({ element: document.getElementById("body") });
+
+  function previewMarkdown() {
+    const title = document.getElementById("title").value;
+    const author = document.getElementById("author").value;
+    const description = document.getElementById("description").value;
+    const tags = document.getElementById("tags").value;
+    const body = editor.value();
+
+    const frontMatter = `# ${title}\n**作者**: ${author}  \n**简介**: ${description}  \n**标签**: ${tags}\n\n---\n\n`;
+    document.getElementById("preview-content").innerHTML = marked.parse(frontMatter + body);
+  }
+
+  function uploadImage() {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.onchange = () => {
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("image", file);
+
+      fetch("/api/upload-image", {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.text())
+        .then((url) => {
+          editor.codemirror.replaceSelection(`![](${url})`);
+        })
+        .catch((err) => alert("上传失败: " + err));
+    };
+    fileInput.click();
+  }
+</script>
+
+<p><a href="/">返回主页</a></p>
+</body>
+</html>
