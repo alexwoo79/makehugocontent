@@ -1,101 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>发布文章</title>
-  <link rel="stylesheet" href="/css/easymde.min.css" />
-  <script src="/js/easymde.min.js"></script>
-  <script src="/js/marked.min.js"></script>
-  <style>
-    #preview-area {
-      border: 1px solid #ccc;
-      padding: 1em;
-      margin-top: 1em;
-      max-height: 300px;
-      overflow-y: auto;
-      width: 100%;
-      max-width: 80vw; /* 与 .form_container 的最大宽度一致 */
-    }
-    .form_container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width:80%;
-      width: 100%;
-      max-width: 80vw; /* 限制最大宽度为视窗的 80% */
-      margin: 0 auto; /* 水平居中 */
-    }
-    .form_container form { 
-      width: 100%;
-    }
-  </style>
-</head>
-<body>
-  <div class="form_container">
-    <h2>新建文章</h2>
-    <form method="post" action="/admin/upload">
-      子目录 (content 子文件夹): <input name="subfolder" /><br />
-      文件名（无扩展名）: <input name="filename" required /><br />
-      分类（可选）: <input name="category" /><br />
-      草稿: <input type="checkbox" name="draft" value="true" /><br />
-
-      <hr />
-      <strong>Front Matter 信息</strong><br />
-      标题: <input name="title" id="title" required /><br />
-      作者: <input name="author" id="author" required /><br />
-      简介:(可选) <input name="description" id="description" /><br />
-      标签（英文逗号分隔）: <input name="tags" id="tags" /><br />
-
-      <hr />
-      <textarea name="body" id="body"></textarea><br />
-      <button type="submit">提交文章并构建</button>
-      <button type="button" onclick="previewMarkdown()">预览</button>
-      <button type="button" onclick="uploadImage()">上传图片</button>
-    </form>
-
-    <div id="preview-area">
-      <h3>预览效果：</h3>
-      <div id="preview-content"></div>
-    </div>
-
-    <script>
-      const editor = new EasyMDE({ element: document.getElementById("body") });
-
-      function previewMarkdown() {
-        const title = document.getElementById("title").value;
-        const author = document.getElementById("author").value;
-        const description = document.getElementById("description").value;
-        const tags = document.getElementById("tags").value;
-        const body = editor.value();
-
-        const frontMatter = `# ${title}\n**作者**: ${author}  \n**简介**: ${description}  \n**标签**: ${tags}\n\n---\n\n`;
-        document.getElementById("preview-content").innerHTML = marked.parse(frontMatter + body);
+  <head>
+    <meta charset="UTF-8" />
+    <title>发布文章</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+      #preview-area {
+        border: 1px solid #ccc;
+        padding: 1em;
+        margin-top: 1em;
+        max-height: 300px;
+        overflow-y: auto;
+        width: 100%;
+        max-width: 50vw; /* 与 .form_container 的最大宽度一致 */
+      }
+      .form_container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 50%;
+        width: 100%;
+        max-width: 50vw; /* 限制最大宽度为视窗的 80% */
+        margin: 0 auto; /* 水平居中 */
+      }
+      .form_container form {
+        width: 100%;
       }
 
-      function uploadImage() {
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
-        fileInput.accept = "image/*";
-        fileInput.onchange = () => {
-          const file = fileInput.files[0];
-          const formData = new FormData();
-          formData.append("image", file);
+      /* 新增样式：表格化布局 */
+      .form-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1em;
+      }
 
-          fetch("/api/upload-image", {
-            method: "POST",
-            body: formData,
-          })
-            .then((res) => res.text())
-            .then((url) => {
-              editor.codemirror.replaceSelection(`![](${url})`);
+      .form-label {
+        flex: 1;
+        text-align: left;
+      }
+
+      .form-input {
+        flex: 2;
+        text-align: right;
+      }
+
+      .form-input input,
+      .form-input select {
+        width: 100%;
+        max-width: 400px;
+      }
+
+      /* 新增：美化按钮样式 */
+      .form-input button {
+        padding: 0.5em 1em;
+        margin: 0.2em;
+        border: none;
+        border-radius: 4px;
+        background-color: #007BFF;
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      .form-input button:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+      }
+
+      .form-input button:active {
+        transform: translateY(0);
+      }
+      
+      .EasyMDEContainer {
+    display: block;
+    width: 40vw;
+}
+    </style>
+  </head>
+  <body>
+    <div class="form_container">
+      <h2>新建文章</h2>
+      <form method="post" action="/admin/upload">
+        <div class="form-row">
+          <div class="form-label">子目录 (content 子文件夹,默认为posts):</div>
+          <div class="form-input"><input name="subfolder" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">文件名（无扩展名）:</div>
+          <div class="form-input"><input name="filename" required /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">分类（可选）:</div>
+          <div class="form-input"><input name="category" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">草稿:</div>
+          <div class="form-input"><input type="checkbox" name="draft" value="true" /></div>
+        </div>
+
+        <hr />
+        <strong>Front Matter 信息</strong><br />
+
+        <div class="form-row">
+          <div class="form-label">标题:</div>
+          <div class="form-input"><input name="title" id="title" required /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">作者:</div>
+          <div class="form-input"><input name="author" id="author" required /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">简介:(可选)</div>
+          <div class="form-input"><input name="description" id="description" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-label">标签（英文逗号分隔）:</div>
+          <div class="form-input"><input name="tags" id="tags" /></div>
+        </div>
+
+        <hr />
+        <div class="form-row">
+          <div class="form-label" style="text-align: left;">正文内容:</div>
+          <div><textarea name="body" id="body"></textarea></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label"></div>
+          <div class="form-input">
+            <button type="submit">提交文章并构建</button>
+            <button type="button" onclick="previewMarkdown()">预览</button>
+            <button type="button" onclick="uploadImage()">上传图片</button>
+          </div>
+        </div>
+      </form>
+
+      <div id="preview-area">
+        <h3>预览效果：</h3>
+        <div id="preview-content"></div>
+      </div>
+
+      <script>
+        const editor = new EasyMDE({
+          element: document.getElementById("body"),
+        });
+
+        function previewMarkdown() {
+          const title = document.getElementById("title").value;
+          const author = document.getElementById("author").value;
+          const description = document.getElementById("description").value;
+          const tags = document.getElementById("tags").value;
+          const body = editor.value();
+
+          const frontMatter = `# ${title}\n**作者**: ${author}  \n**简介**: ${description}  \n**标签**: ${tags}\n\n---\n\n`;
+          document.getElementById("preview-content").innerHTML = marked.parse(
+            frontMatter + body
+          );
+        }
+
+        function uploadImage() {
+          const fileInput = document.createElement("input");
+          fileInput.type = "file";
+          fileInput.accept = "image/*";
+          fileInput.onchange = () => {
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("image", file);
+
+            fetch("/api/upload-image", {
+              method: "POST",
+              body: formData,
             })
-            .catch((err) => alert("上传失败: " + err));
-        };
-        fileInput.click();
-      }
-    </script>
+              .then((res) => res.text())
+              .then((url) => {
+                editor.codemirror.replaceSelection(`![](${url})`);
+              })
+              .catch((err) => alert("上传失败: " + err));
+          };
+          fileInput.click();
+        }
+      </script>
 
-    <p><a href="/">返回主页</a></p>
-  </div>
-</body>
+      <p><a href="/">返回主页</a></p>
+    </div>
+  </body>
 </html>

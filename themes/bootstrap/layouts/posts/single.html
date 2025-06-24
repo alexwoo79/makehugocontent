@@ -1,0 +1,19 @@
+{{ define "main" }}
+<div class="project-container">
+    <section class="project-list">
+        <h2>Posts</h2>
+        <ul>
+            {{range (where .Site.RegularPages "Type" "in" "posts")}}
+            <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+            {{end}}
+        </ul>
+    </section>
+    <section class="project">
+        <h3>{{ .Title }}</h3>
+        <p style="display: inline-block; margin-right: 10px;">创建日期: {{ .Date.Format "2006-01-02" }}</p>
+        <p style="display: inline-block; margin-right: 10px;">作者: {{ .Params.author }}</p>
+        <p style="display: inline-block;">tags: {{ .Params.tags }}</p>
+        {{ .Content }}
+    </section>
+</div>
+{{ end }}

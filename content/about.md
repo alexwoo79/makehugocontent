@@ -4,4 +4,4 @@ draft = false
 title = 'About'
 +++
 
-This is a sample about page for the website. It provides information about the site, its purpose, and any other relevant details that visitors might find useful.
+设计公司wiki文档展示网站，发布页面需要登录注册 页面链接：[login](http://localhost:8080/admin/login)

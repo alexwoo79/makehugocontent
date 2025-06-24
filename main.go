@@ -20,7 +20,7 @@ import (
 var (
 	tmpl        = template.Must(template.ParseGlob("templates/*.html"))
 	db          *sql.DB
-	hugoContent = "content"
+	hugoContent = "content/posts"
 	imageFolder = "static/uploads"
 )
 
