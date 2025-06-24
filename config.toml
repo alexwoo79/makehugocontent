@@ -1,5 +1,16 @@
 baseURL = "http://localhost:8080"
 title = "设计公司wiki"
 theme = "bootstrap"
-markup.goldmark.renderer.unsafe = true
 
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+    [markup.goldmark.extensions]
+      [markup.goldmark.extensions.passthrough]
+        enable = true
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [['\[', '\]'], ['$$', '$$']]
+          inline = [['\(', '\)']]
+[params]
+  math = true

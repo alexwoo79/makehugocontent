@@ -1,0 +1,30 @@
+---
+title: "bootstrap for upload"
+date: "2025-06-24T23:20:54+08:00"
+author: "Alex"
+description: "使用bootstrap对表格，upload界面，quote做了优化。"
+tags: []
+categories: [""]
+draft: false
+---
+
+```
+{{ $htmlTable := .Inner | markdownify }}
+{{ $table_class := .Get "table_class" }}
+{{ $thead_class := .Get "thead_class" }}
+{{ if .Get "caption" }}
+    {{ $caption := .Get "caption" }} 
+    {{ $old_cap := "<table>" }}
+    {{ $new_cap := printf "<table>\n<caption>%s</caption>" $caption }}
+    {{ $htmlTable = replace $htmlTable $old_cap $new_cap }} 
+{{ end }}
+{{ $old_class := "<table>" }}
+{{ $new_class := printf "<table class=\"%s\">" $table_class }}
+{{ $htmlTable = replace $htmlTable $old_class $new_class }}
+{{ $old_thead := "<thead>" }}
+{{ $new_thead := printf "<thead class=\"%s\">" $thead_class }}
+{{ $htmlTable = replace $htmlTable $old_thead $new_thead }}
+<div class="table-responsive">
+{{ $htmlTable | safeHTML }}
+</div>
+```
