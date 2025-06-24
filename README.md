@@ -17,6 +17,7 @@
 ---
 
 ## 目录结构
+
 ```plaintext
 makehugocontent/
 ├── main.go
@@ -24,8 +25,6 @@ makehugocontent/
 ├── static/
 │ └── uploads/ # 图片上传目录（初次需创建）
 ├── content/
-│ ├── en/
-│ └── zh/
 ├── public/ # Hugo 静态文件输出
 ├── templates/
 │ ├── login.html
@@ -35,6 +34,7 @@ makehugocontent/
 ├── .gitignore
 └── README.md
 ```
+
 ---
 
 ## 快速开始
@@ -42,7 +42,7 @@ makehugocontent/
 ### 依赖环境
 
 - Go ≥ 1.18  
-- Hugo（安装请参考 https://gohugo.io/getting-started/install/）
+- Hugo（安装请参考 <https://gohugo.io/getting-started/install/）>
 
 ### 启动服务
 
@@ -54,7 +54,7 @@ go get github.com/mattn/go-sqlite3 golang.org/x/crypto/bcrypt
 go run main.go
 ```
 
-访问 http://localhost:8080/
+访问 <http://localhost:8080/>
 
 使用说明
 注册和登录
@@ -79,5 +79,3 @@ go run main.go
 
 许可证
 MIT © 2025 Alex Woo
-
-

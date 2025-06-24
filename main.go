@@ -33,6 +33,9 @@ func main() {
 	http.HandleFunc("/api/upload-image", authMiddleware(imageUploadHandler))
 
 	http.Handle("/", http.FileServer(http.Dir("public")))
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
+	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
+	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("static/uploads"))))
 
 	log.Println("服务启动: http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
@@ -119,7 +122,6 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	subfolder := r.FormValue("subfolder")
 	filename := r.FormValue("filename")
 	category := r.FormValue("category")
-	lang := r.FormValue("lang")
 	draft := r.FormValue("draft") == "true"
 	title := r.FormValue("title")
 	author := r.FormValue("author")
@@ -146,7 +148,7 @@ draft: %v
 		filename += ".md"
 	}
 
-	savePath := filepath.Join(hugoContent, lang)
+	savePath := filepath.Join(hugoContent)
 	if subfolder != "" {
 		savePath = filepath.Join(savePath, filepath.Clean(subfolder))
 	}

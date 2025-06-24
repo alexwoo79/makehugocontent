@@ -1,0 +1,60 @@
+.container {
+    margin: 0 auto;
+    width: 80%;
+}
+
+.project {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+nav,
+footer {
+    background-color: #009d6e;
+    color: #fff;
+    text-align: center;
+}
+
+nav {
+    display: flex;
+    flex-direction: column;
+}
+
+nav>a {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    color: #fff
+}
+
+.project img {
+    max-width: 100%;
+    height: auto;
+}
+
+@media only screen and (min-width: 768px) {
+    nav {
+        flex-direction: row;
+    }
+
+    .project-container {
+        display: flex;
+    }
+
+    .project-container .project-list {
+        width: 20%
+    }
+
+    .project {
+        flex: 1;
+        width: 80%;
+    }
+}
+
+/* 确保图片样式在所有情况下生效 */
+.project img {
+    flex: auto;
+    max-width: 80%;
+    width:80%;
+    height: auto;
+}

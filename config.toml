@@ -1,14 +1,7 @@
 baseURL = "http://localhost:8080/"
-languageCode = "en-us"
 title = "Hugo Admin Site"
-theme = "ananke"
-defaultContentLanguage = "en"
-enableRobotsTXT = true
-
-[languages]
-  [languages.en]
-    weight = 1
-    languageName = "English"
-  [languages.zh]
-    weight = 2
-    languageName = "中文"
+theme = "paper"
+markup.goldmark.renderer.unsafe = true
+[params]
+  # color style
+  color = 'light'                           # linen, wheat, gray, light

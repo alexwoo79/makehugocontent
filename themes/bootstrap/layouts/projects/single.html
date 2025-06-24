@@ -1,0 +1,17 @@
+{{ define "main" }}
+<div class="project-container">
+    <section class="project-list">
+<h2>Projects</h2>
+<ul>
+    {{range (where .Site.RegularPages "Type" "in" "projects")}}
+    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    {{end}}
+</ul>
+</section>
+<section class="project">
+    <h2>{{ .Title }}</h2>
+<h4>single template</h4>
+    {{ .Content }}
+</section>
+</div>
+{{ end }}
