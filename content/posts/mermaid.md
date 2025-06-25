@@ -159,3 +159,77 @@ pie
 "Cats" : 85.9
 "Rats" : 15
 ```
+
+```mermaid
+mindmap
+  root((mindmap))
+    Origins
+      Long history
+      ::icon(fa fa-book)
+      Popularisation
+        British popular psychology author Tony Buzan
+    Research
+      On effectiveness<br/>and features
+      On Automatic creation
+        Uses
+            Creative techniques
+            Strategic planning
+            Argument mapping
+    Tools
+      Pen and paper
+      Mermaid
+```
+
+
+```mermaid
+timeline
+  title History of Social Media Platform
+  2002 : LinkedIn
+  2004 : Facebook
+       : Google
+  2005 : Youtube
+  2006 : Twitter
+```
+
+```mermaid
+sankey-beta
+  %% source,target,value
+  Electricity grid,Over generation / exports,104.453
+  Electricity grid,Heating and cooling - homes,113.726
+  Electricity grid,H2 conversion,27.14
+```
+
+```mermaid
+xychart-beta
+  title "Sales Revenue"
+  x-axis [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
+  y-axis "Revenue (in $)" 4000 --> 11000
+  bar [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]
+  line [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]
+```
+
+```mermaid
+---
+config:
+  kanban:
+    ticketBaseUrl: 'https://mermaidchart.atlassian.net/browse/#TICKET#'
+---
+kanban
+  Todo
+    [Create Documentation]
+    docs[Create Blog about the new diagram]
+  [In progress]
+    id6[Create renderer so that it works in all cases. We also add som extra text here for testing purposes. And some more just for the extra flare.]
+  id9[Ready for deploy]
+    id8[Design grammar]@{ assigned: 'knsv' }
+  id10[Ready for test]
+    id4[Create parsing tests]@{ ticket: MC-2038, assigned: 'K.Sveidqvist', priority: 'High' }
+    id66[last item]@{ priority: 'Very Low', assigned: 'knsv' }
+  id11[Done]
+    id5[define getData]
+    id2[Title of diagram is more than 100 chars when user duplicates diagram with 100 char]@{ ticket: MC-2036, priority: 'Very High'}
+    id3[Update DB function]@{ ticket: MC-2037, assigned: knsv, priority: 'High' }
+
+  id12[Can't reproduce]
+    id3[Weird flickering in Firefox]
+```
