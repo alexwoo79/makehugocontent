@@ -1,0 +1,14 @@
+{{ $lang := .Get "lang" | default "text" }}
+{{ $title := .Get "title" | default "Terminal" }}
+
+<div class="terminal">
+  <div class="terminal-header">
+    <span class="terminal-dot red"></span>
+    <span class="terminal-dot yellow"></span>
+    <span class="terminal-dot green"></span>
+    <span class="terminal-title">{{ $lang }}</span>
+  </div>
+  <div class="terminal-body">
+    {{ highlight .Inner $lang "linenos=inline" }}
+  </div>
+</div>

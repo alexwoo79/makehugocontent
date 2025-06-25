@@ -10,7 +10,8 @@ username: "admin"
 ---
 
 - 代码为：
-```plaintext
+
+```plaintext {linenos=inline hl_lines=[2,3,"6-8"] style=github}
 sequenceDiagram
     participant Alice
     participant Bob
@@ -23,6 +24,7 @@ sequenceDiagram
     John->>Bob: How about you?
     Bob-->>John: Jolly good!
 ```
+
 - 生成图片：
 ```mermaid
 sequenceDiagram

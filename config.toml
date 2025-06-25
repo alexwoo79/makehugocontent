@@ -3,6 +3,8 @@ title = "设计公司wiki"
 theme = "bootstrap"
 
 [markup]
+  [markup.highlight]
+    style = 'monokai'
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
@@ -15,3 +17,5 @@ theme = "bootstrap"
 [params]
   math = true
   mermaid = true
+
+  
