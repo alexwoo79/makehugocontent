@@ -14,3 +14,4 @@ theme = "bootstrap"
           inline = [['\(', '\)']]
 [params]
   math = true
+  mermaid = true

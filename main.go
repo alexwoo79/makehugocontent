@@ -31,6 +31,7 @@ func main() {
 	http.HandleFunc("/admin/register", registerHandler)
 	http.HandleFunc("/admin/upload", authMiddleware(uploadHandler))
 	http.HandleFunc("/api/upload-image", authMiddleware(imageUploadHandler))
+	http.HandleFunc("/admin/logout", logoutHandler)
 
 	http.Handle("/", http.FileServer(http.Dir("public")))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
@@ -118,6 +119,15 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 获取当前登录用户名
+	sessionCookie, err := r.Cookie("session")
+	var username string
+	if err == nil && sessionCookie.Value != "" {
+		username = sessionCookie.Value
+	} else {
+		username = "anonymous" // 默认值，如果无法获取用户名
+	}
+
 	// 读取表单字段
 	subfolder := r.FormValue("subfolder")
 	filename := r.FormValue("filename")
@@ -137,9 +147,10 @@ description: "%s"
 tags: [%s]
 categories: ["%s"]
 draft: %v
+username: "%s"
 ---
 
-`, title, time.Now().Format(time.RFC3339), author, description, parseTags(tags), category, draft)
+`, title, time.Now().Format(time.RFC3339), author, description, parseTags(tags), category, draft, username)
 
 	full := front + body
 
@@ -152,7 +163,7 @@ draft: %v
 	if subfolder != "" {
 		savePath = filepath.Join(savePath, filepath.Clean(subfolder))
 	}
-	err := os.MkdirAll(savePath, os.ModePerm)
+	err = os.MkdirAll(savePath, os.ModePerm)
 	if err != nil {
 		http.Error(w, "创建目录失败: "+err.Error(), 500)
 		return
@@ -231,4 +242,17 @@ func buildHugo() {
 	} else {
 		log.Println("构建完成")
 	}
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	// 清除 session cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:   "session",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+
+	// 重定向到登录页
+	http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
 }

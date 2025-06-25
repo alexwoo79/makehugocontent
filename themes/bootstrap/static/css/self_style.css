@@ -74,3 +74,22 @@ blockquote {
 }
 
 
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap; /* 允许换行 */
+}
+
+.form-label {
+    font-weight: bold;
+    margin-right: 10px;
+    min-width: 120px;
+    text-align: right;
+    width: auto;
+}
+
+.form-input {
+    flex-grow: 1;
+    width: 100%; /* 输入区域占满剩余空间 */
+}
