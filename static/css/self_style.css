@@ -125,9 +125,10 @@ pre.chroma,
   height: 12px;
   border-radius: 50%;
 }
-.terminal-dot.red { background-color: #dc4545; }
-.terminal-dot.yellow { background-color: #e9cf2c; }
-.terminal-dot.green { background-color: #44cf3f; }
+
+.terminal-dot.red { background-color: #ff3b30; }
+.terminal-dot.yellow { background-color: #ffbf00; }
+.terminal-dot.green { background-color: #00c800; }
 
 .terminal-title {
   color: #ccc;
