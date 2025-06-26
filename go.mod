@@ -1,4 +1,4 @@
-module makehugocontent
+module github.com/alexwoo79/makehugocontent
 
 go 1.24.3
 
