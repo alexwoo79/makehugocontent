@@ -111,3 +111,17 @@ func checkLogin(w http.ResponseWriter, r *http.Request) bool {
 	}
 	return true
 }
+
+// 点击退出按钮 删除 session cookie
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	// 清除 session cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:   "session",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+
+	// 重定向到登录页
+	http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
+}
