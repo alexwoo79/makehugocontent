@@ -2,24 +2,20 @@ package utils
 
 import (
 	"log"
-	"os"
 	"os/exec"
 )
 
 func RunHugo() {
 	go func() {
 		log.Println("开始执行 Hugo 构建...")
-		// 切换到 hugo 目录
-		err := os.Chdir("hugo")
-		if err != nil {
-			log.Printf("切换目录失败: %v\n", err)
-			return
-		}
-		// 执行构建命令
+
+		// 使用系统环境中的 hugo 命令，避免依赖本地相对路径
 		cmd := exec.Command("hugo", "--minify")
+		cmd.Dir = "hugo" // 设置工作目录为 hugo 文件夹
+
 		out, err := cmd.CombinedOutput()
 		if err != nil {
-			log.Printf("构建失败: %v\n%s", err, out)
+			log.Printf("构建失败: %v\n输出: %s", err, out)
 		} else {
 			log.Println("构建完成")
 		}

@@ -9,4 +9,7 @@ draft: false
 username: "admin"
 ---
 
+# 测试
 测试，是否正确在hugo文件夹内运行了hugo --minixx命令。
+
+增加点内容实施！888

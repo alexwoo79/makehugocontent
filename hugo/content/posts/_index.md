@@ -1,9 +1,7 @@
-+++
-title = "Posts"
-draft = false
-+++
-
 <div style="display: flex; justify-content: space-between; align-items: center;">
   <div>文章列表</div>
-  <a href="http://localhost:8080/admin/upload" class="btn btn-light">新建文章</a>
+  <div style="display: flex; gap: 0.5rem;">
+    <a href="http://localhost:8080/admin/upload" class="btn btn-light">新建文章</a>
+    <a href="http://localhost:8080/admin/content" class="btn btn-light">修改文章</a>
+  </div>
 </div>

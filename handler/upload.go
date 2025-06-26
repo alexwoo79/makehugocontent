@@ -52,7 +52,7 @@ draft=%v
 	body := r.FormValue("body")
 	content := front + body
 
-	saveDir := filepath.Join("content", subfolder)
+	saveDir := filepath.Join("hugo/content/posts", subfolder)
 	_ = os.MkdirAll(saveDir, os.ModePerm)
 	full := filepath.Join(saveDir, filename)
 	_ = os.WriteFile(full, []byte(content), 0644)
