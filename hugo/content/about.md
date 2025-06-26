@@ -4,7 +4,7 @@ draft = false
 title = 'About'
 +++
 
-设计公司wiki文档展示网站，发布页面需要登录注册 页面链接：[login](http://172.16.1.124:8080/admin/login)
+设计公司wiki文档展示网站，发布页面需要登录注册 页面链接：[login](http://localhost:8080/admin/login)
 {{< details summary="See the details" >}}
 {{< qr text="有任何疑问，请联系管理员" />}}
 {{< /details >}}

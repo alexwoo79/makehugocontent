@@ -1,4 +1,4 @@
 hugo/public/
-users.db
+data/users.db
 *.log
 *.exe
