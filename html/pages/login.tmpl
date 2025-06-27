@@ -1,0 +1,20 @@
+{{ define "title" }}登录{{ end }}
+
+{{ define "content" }}
+<div class="form-container">
+    <h2>登录后台</h2>
+    <form method="post" action="/admin/login">
+        <div class="mb-3">
+            <label for="username" class="form-label">用户名</label>
+            <input type="text" name="username" id="username" class="form-control" required />
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">密码</label>
+            <input type="password" name="password" id="password" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary">登录</button>
+    </form>
+
+    <p><a href="/admin/register">没有账号？注册</a></p>
+</div>
+{{ end }}

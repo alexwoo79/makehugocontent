@@ -1,0 +1,195 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>设计公司wiki</title><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.css integrity=sha384-zh0CIslj+VczCZtlzBcjt5ppRcsAmDnRem7ESsYwWwg3m/OaJ2l4x7YBZl9Kxxib crossorigin=anonymous><script defer src=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/katex.min.js integrity=sha384-Rma6DA2IPUwhNxmrB/7S3Tno0YY7sFu9WSYMCuulLhIqYSGZ2gKCJWIqhBWqMQfh crossorigin=anonymous></script><script defer src=https://cdn.jsdelivr.net/npm/katex@0.16.21/dist/contrib/auto-render.min.js integrity=sha384-hCXGrW6PitJEwbkoStFjeJxv+fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh crossorigin=anonymous onload=renderMathInElement(document.body)></script><script>document.addEventListener("DOMContentLoaded",function(){renderMathInElement(document.body,{delimiters:[{left:"\\[",right:"\\]",display:!0},{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1}],throwOnError:!1})})</script><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css?v=1" rel=stylesheet integrity=sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr crossorigin=anonymous></link><link rel=stylesheet href="/css/self_style.css?v=1"></head><body><div class=container><header><h1>设计公司wiki</h1></header><nav><a href=/>Home</a>
+<a href=/about>About</a>
+<a href=/posts>Posts</a></nav><main id=content><div class=project-container><section class=project-list><h2>Posts</h2><ul><li><a href=/posts/cz_part/>创作部分</a></li><li><a href=/posts/mermaid/>mermaid test</a></li><li><a href=/posts/6/>第一党小组学习</a></li><li><a href=/posts/codehighlight/>code highlight and style</a></li><li><a href=/posts/formular/>公式测试</a></li><li><a href=/posts/readme_zh-cn/>github markdown</a></li><li><a href=/posts/1/>会议纪要</a></li><li><a href=/posts/2/>党员学习教育</a></li><li><a href=/posts/3/>公众号文章样本</a></li><li><a href=/posts/4/>招标公告</a></li></ul></section><section class=project><h3>mermaid test</h3><p style=display:inline-block;margin-right:10px>创建日期: 2025-06-25,</p><p style=display:inline-block;margin-right:10px>作者: Alex,</p><p style=display:inline-block>tags: [],</p><p style=display:inline-block>上传者: admin</p><ul><li>代码为：</li></ul><div class=highlight><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4;display:grid><code class=language-plaintext data-lang=plaintext><span style=display:flex><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1</span><span>sequenceDiagram
+</span></span><span style=display:flex;background-color:#e5e5e5><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2</span><span>    participant Alice
+</span></span><span style=display:flex;background-color:#e5e5e5><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3</span><span>    participant Bob
+</span></span><span style=display:flex><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4</span><span>    Alice-&gt;&gt;John: Hello John, how are you?
+</span></span><span style=display:flex><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5</span><span>    loop Healthcheck
+</span></span><span style=display:flex;background-color:#e5e5e5><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6</span><span>        John-&gt;&gt;John: Fight against hypochondria
+</span></span><span style=display:flex;background-color:#e5e5e5><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7</span><span>    end
+</span></span><span style=display:flex;background-color:#e5e5e5><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8</span><span>    Note right of John: Rational thoughts &lt;br/&gt;prevail!
+</span></span><span style=display:flex><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9</span><span>    John--&gt;&gt;Alice: Great!
+</span></span><span style=display:flex><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10</span><span>    John-&gt;&gt;Bob: How about you?
+</span></span><span style=display:flex><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11</span><span>    Bob--&gt;&gt;John: Jolly good!
+</span></span></code></pre></div><ul><li>生成图片：</li></ul><pre class=mermaid>
+  sequenceDiagram
+    participant Alice
+    participant Bob
+    Alice-&gt;&gt;John: Hello John, how are you?
+    loop Healthcheck
+        John-&gt;&gt;John: Fight against hypochondria
+    end
+    Note right of John: Rational thoughts &lt;br/&gt;prevail!
+    John--&gt;&gt;Alice: Great!
+    John-&gt;&gt;Bob: How about you?
+    Bob--&gt;&gt;John: Jolly good!
+</pre><pre class=mermaid>
+  flowchart LR
+
+A[Hard] --&gt;|Text| B(Round)
+B --&gt; C{Decision}
+C --&gt;|One| D[Result 1]
+C --&gt;|Two| E[Result 2]
+</pre><pre class=mermaid>
+  gantt
+    section Section
+    Completed :done,    des1, 2014-01-06,2014-01-08
+    Active        :active,  des2, 2014-01-07, 3d
+    Parallel 1   :         des3, after des1, 1d
+    Parallel 2   :         des4, after des1, 1d
+    Parallel 3   :         des5, after des3, 1d
+    Parallel 4   :         des6, after des4, 1d
+</pre><pre class=mermaid>
+  classDiagram
+Class01 &lt;|-- AveryLongClass : Cool
+&lt;&lt;Interface&gt;&gt; Class01
+Class09 --&gt; C2 : Where am I?
+Class09 --* C3
+Class09 --|&gt; Class07
+Class07 : equals()
+Class07 : Object[] elementData
+Class01 : size()
+Class01 : int chimp
+Class01 : int gorilla
+class Class10 {
+  &lt;&lt;service&gt;&gt;
+  int id
+  size()
+}
+</pre><pre class=mermaid>
+  stateDiagram-v2
+[*] --&gt; Still
+Still --&gt; [*]
+Still --&gt; Moving
+Moving --&gt; Still
+Moving --&gt; Crash
+Crash --&gt; [*]
+</pre><pre class=mermaid>
+  
+C4Context
+title System Context diagram for Internet Banking System
+
+Person(customerA, &#34;Banking Customer A&#34;, &#34;A customer of the bank, with personal bank accounts.&#34;)
+Person(customerB, &#34;Banking Customer B&#34;)
+Person_Ext(customerC, &#34;Banking Customer C&#34;)
+System(SystemAA, &#34;Internet Banking System&#34;, &#34;Allows customers to view information about their bank accounts, and make payments.&#34;)
+
+Person(customerD, &#34;Banking Customer D&#34;, &#34;A customer of the bank, &lt;br/&gt; with personal bank accounts.&#34;)
+
+Enterprise_Boundary(b1, &#34;BankBoundary&#34;) {
+
+  SystemDb_Ext(SystemE, &#34;Mainframe Banking System&#34;, &#34;Stores all of the core banking information about customers, accounts, transactions, etc.&#34;)
+
+  System_Boundary(b2, &#34;BankBoundary2&#34;) {
+    System(SystemA, &#34;Banking System A&#34;)
+    System(SystemB, &#34;Banking System B&#34;, &#34;A system of the bank, with personal bank accounts.&#34;)
+  }
+
+  System_Ext(SystemC, &#34;E-mail system&#34;, &#34;The internal Microsoft Exchange e-mail system.&#34;)
+  SystemDb(SystemD, &#34;Banking System D Database&#34;, &#34;A system of the bank, with personal bank accounts.&#34;)
+
+  Boundary(b3, &#34;BankBoundary3&#34;, &#34;boundary&#34;) {
+    SystemQueue(SystemF, &#34;Banking System F Queue&#34;, &#34;A system of the bank, with personal bank accounts.&#34;)
+    SystemQueue_Ext(SystemG, &#34;Banking System G Queue&#34;, &#34;A system of the bank, with personal bank accounts.&#34;)
+  }
+}
+
+BiRel(customerA, SystemAA, &#34;Uses&#34;)
+BiRel(SystemAA, SystemE, &#34;Uses&#34;)
+Rel(SystemAA, SystemC, &#34;Sends e-mails&#34;, &#34;SMTP&#34;)
+Rel(SystemC, customerA, &#34;Sends e-mails to&#34;)
+</pre><pre class=mermaid>
+    journey
+    title My working day
+    section Go to work
+      Make tea: 5: Me
+      Go upstairs: 3: Me
+      Do work: 1: Me, Cat
+    section Go home
+      Go downstairs: 5: Me
+      Sit down: 3: Me
+</pre><pre class=mermaid>
+  gitGraph
+  commit
+  commit
+  branch develop
+  checkout develop
+  commit
+  commit
+  checkout main
+  merge develop
+  commit
+  commit
+</pre><pre class=mermaid>
+  
+pie
+&#34;Dogs&#34; : 386
+&#34;Cats&#34; : 85.9
+&#34;Rats&#34; : 15
+</pre><pre class=mermaid>
+  mindmap
+  root((mindmap))
+    Origins
+      Long history
+      ::icon(fa fa-book)
+      Popularisation
+        British popular psychology author Tony Buzan
+    Research
+      On effectiveness&lt;br/&gt;and features
+      On Automatic creation
+        Uses
+            Creative techniques
+            Strategic planning
+            Argument mapping
+    Tools
+      Pen and paper
+      Mermaid
+</pre><pre class=mermaid>
+  timeline
+  title History of Social Media Platform
+  2002 : LinkedIn
+  2004 : Facebook
+       : Google
+  2005 : Youtube
+  2006 : Twitter
+</pre><pre class=mermaid>
+  sankey-beta
+  %% source,target,value
+  Electricity grid,Over generation / exports,104.453
+  Electricity grid,Heating and cooling - homes,113.726
+  Electricity grid,H2 conversion,27.14
+</pre><pre class=mermaid>
+  xychart-beta
+  title &#34;Sales Revenue&#34;
+  x-axis [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
+  y-axis &#34;Revenue (in $)&#34; 4000 --&gt; 11000
+  bar [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]
+  line [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]
+</pre><pre class=mermaid>
+  ---
+config:
+  kanban:
+    ticketBaseUrl: &#39;https://mermaidchart.atlassian.net/browse/#TICKET#&#39;
+---
+kanban
+  Todo
+    [Create Documentation]
+    docs[Create Blog about the new diagram]
+  [In progress]
+    id6[Create renderer so that it works in all cases. We also add som extra text here for testing purposes. And some more just for the extra flare.]
+  id9[Ready for deploy]
+    id8[Design grammar]@{ assigned: &#39;knsv&#39; }
+  id10[Ready for test]
+    id4[Create parsing tests]@{ ticket: MC-2038, assigned: &#39;K.Sveidqvist&#39;, priority: &#39;High&#39; }
+    id66[last item]@{ priority: &#39;Very Low&#39;, assigned: &#39;knsv&#39; }
+  id11[Done]
+    id5[define getData]
+    id2[Title of diagram is more than 100 chars when user duplicates diagram with 100 char]@{ ticket: MC-2036, priority: &#39;Very High&#39;}
+    id3[Update DB function]@{ ticket: MC-2037, assigned: knsv, priority: &#39;High&#39; }
+
+  id12[Can&#39;t reproduce]
+    id3[Weird flickering in Firefox]
+</pre></section></div></main><footer><small>Copyright 2025 Crccredc.</small></footer></div><script type=module>
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+  </script></body></html>
