@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>编辑文章</title>
+  <link rel="stylesheet" href="/css/self_style.css?v=1" />
+  <!-- 引入 EasyMDE 样式 -->
+  <link href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" rel="stylesheet" />
+</head>
+<body>
+<div class="container">
+  <h2>编辑文章</h2>
+  <form method="post" action="/admin/update">
+    <input type="hidden" name="filepath" value="{{.FilePath}}" />
+    <!-- 使用 class 替代 style -->
+    <textarea name="content" rows="25" class="markdown-editor">{{.Content}}</textarea>
+    <button type="submit" class="submit-btn">保存修改</button>
+    <a href="/admin/content" class="preview-btn">返回</a>
+  </form>
+</div>
+
+<!-- 引入 EasyMDE JS -->
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+  // 初始化 EasyMDE
+  new EasyMDE({
+    element: document.querySelector(".markdown-editor"),
+    spellChecker: false, // 禁用拼写检查以提升体验
+    autofocus: true,
+    promptURLs: true,
+  });
+</script>
+</body>
+</html>

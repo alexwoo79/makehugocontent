@@ -1,0 +1,29 @@
+{{ define "title" }}编辑文章{{ end }}
+
+{{ define "head" }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
+{{ end }}
+
+{{ define "content" }}
+<div class="form-container">
+    <h2>编辑文章</h2>
+    <form method="post" action="/admin/update">
+        <input type="hidden" name="filepath" value="{{ .FilePath }}" />
+        <textarea name="content" rows="25" class="markdown-editor">{{ .Content }}</textarea>
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary">保存修改</button>
+            <a href="/admin/content" class="btn btn-outline-secondary">返回</a>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+    new EasyMDE({
+        element: document.querySelector(".markdown-editor"),
+        spellChecker: false,
+        autofocus: true,
+        promptURLs: true
+    });
+</script>
+{{ end }}
