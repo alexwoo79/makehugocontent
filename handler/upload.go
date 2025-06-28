@@ -37,15 +37,15 @@ func UploadPageHandler(w http.ResponseWriter, r *http.Request) {
 		filename += ".md"
 	}
 
-	front := fmt.Sprintf(`+++ 
-title="%s"
-date="%s"
-author="%s"
-description="%s"
-tags=[%s]
-categories=["%s"]
-draft=%v
-+++ 
+	front := fmt.Sprintf(`--- 
+title : "%s"
+date : "%s"
+author : "%s"
+description : "%s"
+tags : [%s]
+categories : ["%s"]
+draft : %v
+---
 
 `, title, time.Now().Format(time.RFC3339), author, desc, tagArray(tags), category, draft)
 

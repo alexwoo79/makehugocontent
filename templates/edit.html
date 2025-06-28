@@ -1,34 +1,55 @@
 <!DOCTYPE html>
 <html lang="zh">
-<head>
-  <meta charset="UTF-8" />
-  <title>编辑文章</title>
-  <link rel="stylesheet" href="/css/self_style.css?v=1" />
-  <!-- 引入 EasyMDE 样式 -->
-  <link href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" rel="stylesheet" />
-</head>
-<body>
-<div class="container">
-  <h2>编辑文章</h2>
-  <form method="post" action="/admin/update">
-    <input type="hidden" name="filepath" value="{{.FilePath}}" />
-    <!-- 使用 class 替代 style -->
-    <textarea name="content" rows="25" class="markdown-editor">{{.Content}}</textarea>
-    <button type="submit" class="submit-btn">保存修改</button>
-    <a href="/admin/content" class="preview-btn">返回</a>
-  </form>
-</div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>编辑文章</title>
+    <link rel="stylesheet" href="/css/output.css?v=1" />
+    <link rel="stylesheet" href="/css/easymde.min.css" />
+    <script src="/js/easymde.min.js"></script>
+  </head>
 
-<!-- 引入 EasyMDE JS -->
-<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
-<script>
-  // 初始化 EasyMDE
-  new EasyMDE({
-    element: document.querySelector(".markdown-editor"),
-    spellChecker: false, // 禁用拼写检查以提升体验
-    autofocus: true,
-    promptURLs: true,
-  });
-</script>
-</body>
+  <body class="bg-gray-50 min-h-screen">
+    <div class="max-w-5xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-bold">编辑</h2>
+        <a href="/admin/content"
+          class="border border-red-400 text-red-500 hover:bg-red-50 px-4 py-2 rounded">
+          返回管理
+        </a>
+      </div>
+      <div class="mt-4">
+        <form method="post" action="/admin/update" class="space-y-2">
+          <input type="hidden" name="filepath" value="{{.FilePath}}" />
+          <!-- 使用 class 替代 style -->
+          <textarea name="content" rows="25" class="markdown-editor">{{.Content}}</textarea>
+
+          <div class="flex items-center justify-between mb-6">
+            <button
+              type="submit"
+              class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
+              onclick="alert('文章正在保存...')">
+              保存修改
+            </button>
+            <a
+              href="/admin/content"
+              class="border border-red-400 text-red-500 hover:bg-red-50 px-4 py-2 rounded">
+              返回管理
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 引入 EasyMDE JS -->
+    <script src="/js/easymde.min.js"></script>
+    <script>
+      // 初始化 EasyMDE
+      new EasyMDE({
+        element: document.querySelector(".markdown-editor"),
+        spellChecker: false, // 禁用拼写检查以提升体验
+        autofocus: true,
+        promptURLs: true,
+      });
+    </script>
+  </body>
 </html>

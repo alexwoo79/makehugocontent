@@ -1,6 +1,6 @@
 ---
 title: "github markdown"
-date: "2025-06-24T17:25:55+08:00"
+date: "2025-06-24"
 author: "mineru"
 description: "第一稿"
 tags: ["tag1", "tag2"]

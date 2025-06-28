@@ -29,7 +29,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.SetCookie(w, &http.Cookie{Name: "session", Value: user, Path: "/"})
-	http.Redirect(w, r, "/admin/upload", http.StatusSeeOther)
+	http.Redirect(w, r, "/admin/content", http.StatusSeeOther)
 }
 
 // 注册

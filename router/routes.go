@@ -20,4 +20,5 @@ func RegisterRoutes() {
 	http.HandleFunc("/admin/edit", handler.EditPageHandler)
 	http.HandleFunc("/admin/update", handler.UpdateHandler)
 	http.HandleFunc("/admin/delete", handler.DeleteHandler)
+	http.HandleFunc("/admin/export", handler.ExportCSVHandler)
 }
