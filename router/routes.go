@@ -5,20 +5,20 @@ import (
 	"net/http"
 )
 
-func RegisterRoutes() {
+func RegisterRoutes(mux *http.ServeMux) {
 	// Auth
-	http.HandleFunc("/admin/login", handler.LoginHandler)
-	http.HandleFunc("/admin/register", handler.RegisterHandler)
+	mux.HandleFunc("/admin/login", handler.LoginHandler)
+	mux.HandleFunc("/admin/register", handler.RegisterHandler)
 
 	// Upload
-	http.HandleFunc("/admin/upload", handler.UploadPageHandler)
-	http.HandleFunc("/api/upload-image", handler.ImageUploadHandler)
-	http.HandleFunc("/admin/logout", handler.LogoutHandler)
+	mux.HandleFunc("/admin/upload", handler.UploadPageHandler)
+	mux.HandleFunc("/api/upload-image", handler.ImageUploadHandler)
+	mux.HandleFunc("/admin/logout", handler.LogoutHandler)
 
 	// Content 管理
-	http.HandleFunc("/admin/content", handler.ContentListHandler)
-	http.HandleFunc("/admin/edit", handler.EditPageHandler)
-	http.HandleFunc("/admin/update", handler.UpdateHandler)
-	http.HandleFunc("/admin/delete", handler.DeleteHandler)
-	http.HandleFunc("/admin/export", handler.ExportCSVHandler)
+	mux.HandleFunc("/admin/content", handler.ContentListHandler)
+	mux.HandleFunc("/admin/edit", handler.EditPageHandler)
+	mux.HandleFunc("/admin/update", handler.UpdateHandler)
+	mux.HandleFunc("/admin/delete", handler.DeleteHandler)
+	mux.HandleFunc("/admin/export", handler.ExportCSVHandler)
 }

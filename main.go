@@ -11,21 +11,27 @@ func main() {
 	// 1. 初始化数据库
 	database.Init()
 
-	// 2. 提供静态资源
-	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("static/data"))))
-	http.Handle("/svg/", http.StripPrefix("/svg/", http.FileServer(http.Dir("static/svg"))))
-	http.Handle("/lib/", http.StripPrefix("/lib/", http.FileServer(http.Dir("static/lib"))))
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
-	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
-	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("hugo/static/uploads"))))
+	// 2. 使用自定义 mux
+	mux := http.NewServeMux()
 
-	// 3. Hugo 生成的静态站点
-	http.Handle("/", http.FileServer(http.Dir("hugo/public")))
+	// 3. 注册静态资源
+	mux.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("hugo/public/css"))))
+	mux.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("hugo/public/js"))))
+	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("hugo/public/images"))))
 
-	// 4. 注册业务路由
-	router.RegisterRoutes()
+	// 后台页面资源
+	mux.Handle("/admin/css/", http.StripPrefix("/admin/css/", http.FileServer(http.Dir("static/css"))))
+	mux.Handle("/admin/js/", http.StripPrefix("/admin/js/", http.FileServer(http.Dir("static/js"))))
 
-	log.Println("Server running at http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
-	log.Printf("Rendering template: %s", "content_list.html")
+	// 4. 注册 Hugo 页面
+	mux.Handle("/", http.FileServer(http.Dir("hugo/public")))
+
+	// 5. 注册后台业务路由
+	router.RegisterRoutes(mux)
+
+	// 6. 启动服务
+	log.Println("Serving Hugo site at http://localhost:8080/")
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
