@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"makehugocontent/database"
 	"makehugocontent/utils"
 	"net/http"
@@ -27,36 +26,35 @@ func ContentListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Step 1: 获取全部内容行（含 FrontMatter）
 	rows, err := utils.ScanDir(CONTENT_PATH)
 	if err != nil {
 		http.Error(w, "内容读取失败: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	_ = utils.SyncToDB(rows, database.DB) // ⚠️ 引入你的 database 包
-	// Step 2: 排序（按时间ByDate,ByTitle,ByAuthor）
+	_ = utils.SyncToDB(rows, database.DB)
+
+	// 默认按时间降序
 	utils.SortRows(rows, utils.ByDate, true)
 
-	// Step 3: 转换成模板需要的数据结构（你原本使用 contentRow）
 	var list []contentRow
 	for _, r := range rows {
+		// ✅ 1. 使用 FM.Date 而不是 ParsedDate
 		date := r.FM.ParsedDate.Format("2006-01-02 15:04")
 		if r.FM.ParsedDate.IsZero() {
 			fi, _ := os.Stat(filepath.Join(CONTENT_PATH, r.FileName))
 			date = fi.ModTime().Format("2006-01-02 15:04")
 		}
+
+		// ✅ 2. r.FileName 已是相对文件名，直接用即可
 		list = append(list, contentRow{
 			Title:  r.FM.Title,
-			Path:   strings.TrimPrefix(r.FileName, CONTENT_PATH+"/"),
+			Path:   r.FileName, // 例如 "post1.md"
 			Author: r.FM.Author,
 			Date:   date,
 		})
 	}
 
-	// 渲染模板
-	templatePath := "content_list.html"
-	log.Printf("Rendering template from: %s", templatePath)
-	utils.Render(w, templatePath, list)
+	utils.Render(w, "content_list.html", list)
 }
 
 func EditPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +63,13 @@ func EditPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	file := r.URL.Query().Get("file")
 	full := filepath.Join(CONTENT_PATH, file)
+
+	// 检查文件是否存在
+	if _, err := os.Stat(full); os.IsNotExist(err) {
+		http.Error(w, "文件不存在", http.StatusNotFound)
+		return
+	}
+
 	data, err := os.ReadFile(full)
 	if err != nil {
 		http.Error(w, "读取失败", 500)

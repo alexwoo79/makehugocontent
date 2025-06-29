@@ -65,7 +65,7 @@ type Row struct {
 	Body     string
 }
 
-func ParseFile(path string) (Row, error) {
+func ParseFile(path string, root string) (Row, error) {
 	var row Row
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -119,21 +119,25 @@ func ParseFile(path string) (Row, error) {
 	body, _ := io.ReadAll(bytes.NewReader(rest))
 	hash := md5.Sum(data)
 
-	row.FileName = filepath.Base(path)
+	rel, err := filepath.Rel(root, path)
+	if err != nil {
+		return row, err
+	}
+
+	row.FileName = rel
 	row.FM = fm
 	row.Body = string(body)
 	row.Hash = hex.EncodeToString(hash[:])
 	return row, nil
 }
 
-// ScanDir recursively walks root, collects every .md file into []Row.
 func ScanDir(root string) ([]Row, error) {
 	var rows []Row
 	err := filepath.WalkDir(root, func(path string, d os.DirEntry, walkErr error) error {
 		if walkErr != nil || d.IsDir() || !strings.HasSuffix(d.Name(), ".md") {
 			return walkErr
 		}
-		r, perr := ParseFile(path)
+		r, perr := ParseFile(path, root)
 		if perr != nil {
 			return perr
 		}

@@ -7,10 +7,10 @@
   <link rel="stylesheet" href="/css/output.css" />
 
   <!-- ✅ 加入 DataTables CSS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="/css/jquery.dataTables.min.css">
 </head>
 <body class="bg-gray-50 min-h-screen">
-  <div class="max-w-5xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+  <div class="max-w-6xl mx-auto p-4 bg-white shadow-md rounded-lg mt-6">
     <div class="justify-between flex ">
       <h2 class="text-2xl font-bold mb-6">Markdown 内容列表</h2>
       <p class="flex  gap-3">
@@ -45,7 +45,7 @@
             <td class="px-4 py-2 text-gray-700">{{.Path}}</td>
             <td class="px-4 py-2 text-gray-700">{{.Author}}</td>
             <td class="px-4 py-2 text-gray-600">{{.Date}}</td>
-            <td class="px-4 py-2 space-x-2">
+            <td class="px-4 py-2 space-x-4">
               <a href="/admin/edit?file={{.Path}}" class="text-blue-600 hover:underline">✏️ 编辑</a>
               <a href="/admin/delete?file={{.Path}}"
                  onclick="return confirm('确定要删除？')"
@@ -60,8 +60,8 @@
   </div>
 
   <!-- ✅ 引入 jQuery + DataTables JS -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="/js/jquery-3.7.1.min.js"></script>
+  <script src="/js/jquery.dataTables.min.js"></script>
   <script>
     // ✅ 启用排序功能
     $(document).ready(function () {
