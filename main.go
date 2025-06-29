@@ -12,8 +12,11 @@ func main() {
 	database.Init()
 
 	// 2. 提供静态资源
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("hugo/static/css"))))
-	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("hugo/static/js"))))
+	http.Handle("/data/", http.StripPrefix("/data/", http.FileServer(http.Dir("static/data"))))
+	http.Handle("/svg/", http.StripPrefix("/svg/", http.FileServer(http.Dir("static/svg"))))
+	http.Handle("/lib/", http.StripPrefix("/lib/", http.FileServer(http.Dir("static/lib"))))
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
+	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("hugo/static/uploads"))))
 
 	// 3. Hugo 生成的静态站点
