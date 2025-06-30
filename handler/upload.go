@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"database/sql"
 	"fmt"
+	"html/template"
 	"io"
 	"makehugocontent/database"
 	"makehugocontent/utils"
@@ -12,14 +14,19 @@ import (
 	"time"
 )
 
-func UploadPageHandler(w http.ResponseWriter, r *http.Request) {
+type UploadHandler struct {
+	Tmpl   *template.Template
+	DataDB *sql.DB
+}
+
+func (u *UploadHandler) UploadPageHandler(w http.ResponseWriter, r *http.Request) {
 	// 权限校验
 	if !checkLogin(w, r) {
 		return
 	}
 
 	if r.Method == http.MethodGet {
-		utils.Render(w, "upload.html", nil)
+		u.Tmpl.ExecuteTemplate(w, "upload.html", nil)
 		return
 	}
 
@@ -59,7 +66,7 @@ draft : %v
 
 	// 记录上传
 	cookie, _ := r.Cookie("session")
-	database.DB.Exec(`INSERT INTO uploads(filename,filepath,user_id,author)
+	database.DataDB.Exec(`INSERT INTO uploads(filename,filepath,user_id,author)
 		VALUES(?,?,(SELECT id FROM users WHERE username=?),?)`,
 		filename, filepath.Join(subfolder, filename), cookie.Value, author)
 
@@ -70,7 +77,7 @@ draft : %v
 }
 
 // 图片上传
-func ImageUploadHandler(w http.ResponseWriter, r *http.Request) {
+func (u *UploadHandler) ImageUploadHandler(w http.ResponseWriter, r *http.Request) {
 	if !checkLogin(w, r) {
 		return
 	}
@@ -113,7 +120,7 @@ func checkLogin(w http.ResponseWriter, r *http.Request) bool {
 }
 
 // 点击退出按钮 删除 session cookie
-func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+func (u *UploadHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	// 清除 session cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:   "session",

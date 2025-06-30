@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"database/sql"
+	"html/template"
+	"log"
 	"makehugocontent/database"
 	"makehugocontent/utils"
 	"net/http"
@@ -14,6 +17,11 @@ const (
 	CONTENT_PATH = "hugo/content/posts"
 )
 
+type ContentHandler struct {
+	Tmpl   *template.Template
+	DataDB *sql.DB
+}
+
 type contentRow struct {
 	Title  string
 	Path   string
@@ -21,7 +29,7 @@ type contentRow struct {
 	Date   string
 }
 
-func ContentListHandler(w http.ResponseWriter, r *http.Request) {
+func (c *ContentHandler) ContentListHandler(w http.ResponseWriter, r *http.Request) {
 	if !checkLogin(w, r) {
 		return
 	}
@@ -31,7 +39,7 @@ func ContentListHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "内容读取失败: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	_ = utils.SyncToDB(rows, database.DB)
+	_ = utils.SyncToDB(rows, database.DataDB)
 
 	// 默认按时间降序
 	utils.SortRows(rows, utils.ByDate, true)
@@ -53,11 +61,14 @@ func ContentListHandler(w http.ResponseWriter, r *http.Request) {
 			Date:   date,
 		})
 	}
-
-	utils.Render(w, "content_list.html", list)
+	// ✅ 使用统一模板直接渲染 list 数据
+	err = c.Tmpl.ExecuteTemplate(w, "content_list.html", list)
+	if err != nil {
+		log.Println("模板渲染失败:", err)
+		http.Error(w, "页面渲染失败", http.StatusInternalServerError)
+	}
 }
-
-func EditPageHandler(w http.ResponseWriter, r *http.Request) {
+func (c *ContentHandler) EditPageHandler(w http.ResponseWriter, r *http.Request) {
 	if !checkLogin(w, r) {
 		return
 	}
@@ -81,7 +92,7 @@ func EditPageHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func UpdateHandler(w http.ResponseWriter, r *http.Request) {
+func (c *ContentHandler) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if !checkLogin(w, r) {
 		return
 	}
@@ -140,7 +151,7 @@ func UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/content", http.StatusSeeOther)
 }
 
-func DeleteHandler(w http.ResponseWriter, r *http.Request) {
+func (c *ContentHandler) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	if !checkLogin(w, r) {
 		return
 	}

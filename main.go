@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"makehugocontent/database"
+	"makehugocontent/internal/admin"
 	"makehugocontent/router"
 	"net/http"
 )
@@ -11,11 +12,12 @@ import (
 func main() {
 	// 1. 初始化数据库
 	database.Init()
-
+	//定义模版
+	tmpl := template.Must(template.ParseGlob("templates/*.html"))
 	// 2. 使用自定义 mux
-	mux := http.NewServeMux()
 
-	tmpl := template.Must(template.P)
+	adminHandler := &admin.AdminHandler{UserDB: database.UserDB, Tmpl: tmpl}
+	mux := http.NewServeMux()
 
 	// 3. 注册静态资源
 	mux.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("hugo/public/css"))))
@@ -30,11 +32,12 @@ func main() {
 	mux.Handle("/", http.FileServer(http.Dir("hugo/public")))
 
 	// 5. 注册后台业务路由
-	router.RegisterRoutes(mux)
+	adminHandler.RegisterRoutes(mux)
 
-	// 6. 启动服务
-	log.Println("Serving Hugo site at http://localhost:8080/")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	// 6. 注册业务路由（将模板和数据库注入）
+	router.RegisterRoutes(mux, tmpl, database.UserDB, database.DataDB)
+
+	// 4. 启动服务器
+	log.Println("Server started at :8080")
+	http.ListenAndServe(":8080", mux)
 }
