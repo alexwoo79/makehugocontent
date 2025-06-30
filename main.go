@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"makehugocontent/database"
 	"makehugocontent/router"
@@ -13,6 +14,8 @@ func main() {
 
 	// 2. 使用自定义 mux
 	mux := http.NewServeMux()
+
+	tmpl := template.Must(template.P)
 
 	// 3. 注册静态资源
 	mux.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("hugo/public/css"))))

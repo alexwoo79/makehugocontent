@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="/admin/css/easymde.min.css" />
   <script src="/admin/js/easymde.min.js"></script>
   <script src="/admin/js/marked.min.js"></script>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -141,38 +144,77 @@
 
   <!-- 脚本：EasyMDE & 功能函数 -->
   <script>
-    const editor = new EasyMDE({ element: document.getElementById("body") });
+const editor = new EasyMDE({
+  element: document.getElementById("body"),
+  previewRender: function(plainText, previewEl) {
+    // 使用 marked 渲染 Markdown
+    const html = marked.parse(plainText);
+    // 放入 preview 面板
+    previewEl.innerHTML = html;
 
-    function previewMarkdown() {
-      const title = document.getElementById("title").value;
-      const author = document.getElementById("author").value;
-      const description = document.getElementById("description").value;
-      const tags = document.getElementById("tags").value;
-      const body = editor.value();
+    // 渲染 KaTeX 数学公式
+    renderMathInElement(previewEl, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: true}
+      ]
+    });
 
-      const frontMatter =
-        `# ${title}\n**作者**: ${author}  \n**简介**: ${description}  \n**标签**: ${tags}\n\n---\n\n`;
-      document.getElementById("preview-content").innerHTML =
-        marked.parse(frontMatter + body);
-    }
+    return previewEl.innerHTML;
+  },
+});
 
-    function uploadImage() {
-      const fileInput = document.createElement("input");
-      fileInput.type = "file";
-      fileInput.accept = "image/*";
-      fileInput.onchange = () => {
-        const file = fileInput.files[0];
-        const formData = new FormData();
-        formData.append("image", file);
+  function previewMarkdown() {
+    const title = document.getElementById("title").value;
+    const author = document.getElementById("author").value;
+    const description = document.getElementById("description").value;
+    const tags = document.getElementById("tags").value;
+    const body = editor.value();
 
-        fetch("/api/upload-image", { method: "POST", body: formData })
-          .then(res => res.text())
-          .then(url => editor.codemirror.replaceSelection(`![](${url})`))
-          .catch(err => alert("上传失败: " + err));
-      };
-      fileInput.click();
-    }
-  </script>
+    const frontMatter = `
+# ${title}
+**作者**: ${author}  
+**简介**: ${description}  
+**标签**: ${tags}
+
+---
+
+`;
+
+    const html = marked.parse(frontMatter + body);
+    const previewEl = document.getElementById("preview-content");
+    previewEl.innerHTML = html;
+
+    // 触发 KaTeX 渲染数学公式
+    renderMathInElement(previewEl, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false}
+      ]
+    });
+  }
+
+  function uploadImage() {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.onchange = () => {
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("image", file);
+
+      fetch("/api/upload-image", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.text())
+      .then(url => editor.codemirror.replaceSelection(`![](${url})`))
+      .catch(err => alert("上传失败: " + err));
+    };
+    fileInput.click();
+  }
+</script>
+
 </body>
 
 </html>

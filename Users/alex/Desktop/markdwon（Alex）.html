@@ -1,0 +1,22 @@
+<script>
+  marked.setOptions({
+    headerIds: true, // 启用标题ID生成
+    mangle: true,    // 防止与现有ID冲突
+    gfm: true        // 确保支持GitHub风格Markdown
+  });
+
+  function toHTMLWithMath(md) {
+    const html = marked.parse(md);
+    const container = document.createElement("div");
+    container.innerHTML = html;
+    renderMathInElement(container, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false},
+        {left: "\\[", right: "\\]", display: true},
+        {left: "\\(", right: "\\)", display: false}
+      ]
+    });
+    return container.innerHTML;
+  }
+</script>

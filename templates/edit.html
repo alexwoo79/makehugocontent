@@ -6,6 +6,11 @@
     <link rel="stylesheet" href="/admin/css/output.css?v=1" />
     <link rel="stylesheet" href="/admin/css/easymde.min.css" />
     <script src="/admin/js/easymde.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+
   </head>
 
   <body class="bg-gray-50 min-h-screen">
@@ -21,7 +26,7 @@
         <form method="post" action="/admin/update" class="space-y-2">
           <input type="hidden" name="filepath" value="{{.FilePath}}" />
           <!-- 使用 class 替代 style -->
-          <textarea name="content" rows="25" class="markdown-editor">{{.Content}}</textarea>
+          <textarea id="body" name="content" rows="25" class="markdown-editor">{{.Content}}</textarea>
 
           <div class="flex items-center justify-between mb-6">
             <button
@@ -40,16 +45,33 @@
       </div>
     </div>
 
-    <!-- 引入 EasyMDE JS -->
-    <script src="/admin/js/easymde.min.js"></script>
-    <script>
-      // 初始化 EasyMDE
-      new EasyMDE({
-        element: document.querySelector(".markdown-editor"),
-        spellChecker: false, // 禁用拼写检查以提升体验
-        autofocus: true,
-        promptURLs: true,
-      });
-    </script>
+<script src="/admin/js/marked.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const editor = new EasyMDE({
+      element: document.getElementById("body"),
+      spellChecker: false,
+      autofocus: true,
+      promptURLs: true,
+      previewRender: function (plainText) {
+        const html = marked.parse(plainText);
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html;
+
+        renderMathInElement(tempDiv, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false },
+            { left: "\\[", right: "\\]", display: true },
+            { left: "\\(", right: "\\)", display: false }
+          ]
+        });
+        return tempDiv.innerHTML;
+      }
+    });
+  });
+</script>
+
   </body>
 </html>
