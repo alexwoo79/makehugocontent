@@ -5,15 +5,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>发布文章</title>
-
-<link rel="stylesheet" href="/admin/css/output.css" />
-  <!-- EasyMDE & marked -->
-  <link rel="stylesheet" href="/admin/css/easymde.min.css" />
-  <script src="/admin/js/easymde.min.js"></script>
+  <link rel="stylesheet" href="/admin/css/output.css" />
+  <link rel="stylesheet" href="/admin/css/github-markdown.css" />
+  <!-- Markdown 编辑器所需库 -->
   <script src="/admin/js/marked.min.js"></script>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <script src="/admin/js/easymde.min.js"></script>
+  <link rel="stylesheet" href="/admin/css/easymde.min.css">
+  <!-- Font Awesome 图标本地样式 -->
+  <link rel="stylesheet" href="/admin/css/fontawesome.min.css">
+  <!-- 若字体文件不在默认路径，请添加如下样式覆盖字体路径 -->
+  <style>
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  font-display: block;
+  src: url('/admin/webfonts/fa-solid-900.woff2') format('woff2'),
+       url('/admin/webfonts/fa-solid-900.ttf') format('truetype');
+}
+</style>
+  <!-- <link rel="stylesheet" href="<canvas id="">s/github-markdown.css"> -->
+  <link rel="stylesheet" href="/admin/css/vue.css"></link>
+  <!-- 代码高亮样式（GitHub 主题） -->
+  <link rel="stylesheet" href="/admin/css/github.min.css">
+  <script src="/admin/js/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  <!-- KaTeX 数学公式支持 -->
+  <link rel="stylesheet" href="/admin/css/katex.min.css">
+  <script src="/admin/js/katex.min.js"></script>
+  <script src="/admin/js/auto-render.min.js"></script>
+
 </head>
 
 <body class="bg-gray-50 min-h-screen">
@@ -107,8 +129,7 @@
       <!-- 正文内容 -->
       <div>
         <label for="body" class="block text-sm font-medium mb-2">正文内容</label>
-        <textarea id="body" name="body" rows="10"
-                  class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500"></textarea>
+        <textarea id="body" name="body" rows="25" class="markdown-body"></textarea>
       </div>
 
       <!-- 操作按钮 -->
@@ -133,7 +154,7 @@
     <!-- 预览区域 -->
     <div id="preview-area" class="mt-10">
       <h3 class="text-xl font-semibold mb-2">预览效果：</h3>
-      <div id="preview-content" class="prose prose-zinc max-w-none"></div>
+      <div id="preview-content" class="markdown-body"></div>
     </div>
 
     <!-- 返回主页 -->
@@ -144,11 +165,16 @@
 
   <!-- 脚本：EasyMDE & 功能函数 -->
   <script>
-const editor = new EasyMDE({
-  element: document.getElementById("body"),
-  previewRender: function(plainText, previewEl) {
+    const editor = new EasyMDE({
+    element: document.getElementById("body"),
+    spellChecker:true,
+    autofocus:true,
+    promptURLs:true,
+    autoDownloadFontAwesome:false,
+    previewRender: function(plainText, previewEl) {
     // 使用 marked 渲染 Markdown
     const html = marked.parse(plainText);
+    previewEl.classList.add("markdown-body");
     // 放入 preview 面板
     previewEl.innerHTML = html;
 
@@ -156,11 +182,16 @@ const editor = new EasyMDE({
     renderMathInElement(previewEl, {
       delimiters: [
         {left: "$$", right: "$$", display: true},
-        {left: "$", right: "$", display: true}
+        {left: "$", right: "$", display: true},
+        {left: "\\[", right: "\\]", display: true},
+        {left: "\\(", right: "\\)", display: false},
       ]
     });
-
+    previewEl.querySelectorAll("pre code").forEach(block => {
+            hljs.highlightElement(block);
+        });
     return previewEl.innerHTML;
+
   },
 });
 
@@ -189,7 +220,9 @@ const editor = new EasyMDE({
     renderMathInElement(previewEl, {
       delimiters: [
         {left: "$$", right: "$$", display: true},
-        {left: "$", right: "$", display: false}
+        {left: "$", right: "$", display: false},
+        {left: "\\[", right: "\\]", display: true},
+        {left: "\\(", right: "\\)", display: false},
       ]
     });
   }
@@ -213,6 +246,26 @@ const editor = new EasyMDE({
     };
     fileInput.click();
   }
+
+    // 添加拖拽处理
+    const cmWrapper = editor.codemirror.getWrapperElement();
+
+    cmWrapper.addEventListener("dragover", (e) => {
+      e.preventDefault(); // 必须阻止默认，否则 drop 不触发
+    });
+
+    // 统一处理拖拽上传的逻辑
+    cmWrapper.addEventListener("drop", async (e) => {
+      e.preventDefault();
+
+      const file = e.dataTransfer.files[0];
+
+      // 仅处理 .md 文件
+      if (file instanceof File && file.name.endsWith(".md")) {
+        const text = await file.text();
+        editor.value(text);
+      }
+    });
 </script>
 
 </body>
