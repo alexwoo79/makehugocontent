@@ -85,4 +85,17 @@ func Init() {
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`)
 
+	// 获取 admin 用户 ID
+	var adminID int
+	err = UserDB.QueryRow("SELECT id FROM users WHERE username = 'admin'").Scan(&adminID)
+	if err == nil {
+		rows, _ := UserDB.Query("SELECT id FROM departments")
+		defer rows.Close()
+		for rows.Next() {
+			var deptID int
+			rows.Scan(&deptID)
+			UserDB.Exec("INSERT OR IGNORE INTO user_departments (user_id, dept_id) VALUES (?, ?)", adminID, deptID)
+		}
+	}
+
 }

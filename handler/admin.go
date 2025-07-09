@@ -8,34 +8,33 @@ import (
 	"strings"
 )
 
-// AdminHandler 处理 users.db 数据库中的用户管理相关操作
+// AdminHandler 管理用户页面
 type AdminHandler struct {
 	UserDB *sql.DB
 	Tmpl   *template.Template
 }
 
-/* ---------- 数据模型 ---------- */
-
+// 用户结构体
 type User struct {
-	Username    string
-	Role        string
-	Departments []string
+	Username     string
+	Role         string
+	Departments  []string
+	SelectedDept map[string]bool
 }
 
+// 部门结构体
 type Department struct {
 	ID   int
 	Name string
 }
 
-/* ---------- 路由注册 ---------- */
-
+// 注册路由
 func (a *AdminHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/users", a.usersHandler)
 	mux.HandleFunc("/admin/update-role", a.updateRoleHandler)
 }
 
-/* ---------- 页面：用户列表 ---------- */
-
+// 用户列表页面
 func (a *AdminHandler) usersHandler(w http.ResponseWriter, r *http.Request) {
 	_, role := currentUser(r)
 	if role != "admin" {
@@ -43,7 +42,6 @@ func (a *AdminHandler) usersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 1. 查询所有用户
 	rows, err := a.UserDB.Query("SELECT username, role FROM users ORDER BY username")
 	if err != nil {
 		http.Error(w, "数据库查询失败", http.StatusInternalServerError)
@@ -54,24 +52,37 @@ func (a *AdminHandler) usersHandler(w http.ResponseWriter, r *http.Request) {
 	var users []User
 	for rows.Next() {
 		var u User
-		rows.Scan(&u.Username, &u.Role)
-		u.Departments, _ = a.getDepartmentsForUser(u.Username)
+		if err := rows.Scan(&u.Username, &u.Role); err != nil {
+			continue
+		}
+		depts, _ := a.getDepartmentsForUser(u.Username)
+		u.Departments = depts
+		u.SelectedDept = make(map[string]bool)
+		for _, d := range depts {
+			u.SelectedDept[d] = true
+		}
 		users = append(users, u)
 	}
 
-	// 2. 查询所有部门（渲染多选框）
 	allDepts, _ := a.getAllDepartments()
 
 	data := map[string]any{
 		"Users":       users,
 		"Departments": allDepts,
 	}
-	a.Tmpl.ExecuteTemplate(w, "users.html", data)
+	err = a.Tmpl.ExecuteTemplate(w, "users.html", data)
+	if err != nil {
+		http.Error(w, "模板渲染失败: "+err.Error(), http.StatusInternalServerError)
+	}
 }
 
-/* ---------- 接口：修改角色 / 部门 ---------- */
-
+// 更新用户角色和部门
 func (a *AdminHandler) updateRoleHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "非法请求", http.StatusMethodNotAllowed)
+		return
+	}
+
 	_, role := currentUser(r)
 	if role != "admin" {
 		http.Error(w, "权限不足", http.StatusForbidden)
@@ -81,18 +92,18 @@ func (a *AdminHandler) updateRoleHandler(w http.ResponseWriter, r *http.Request)
 
 	username := r.FormValue("username")
 	newRole := r.FormValue("role")
-	selectedDepts := r.Form["departments"] // 多选框 names="departments"
+	selectedDepts := r.Form["departments"]
 
-	// 1) 更新角色
 	_, err := a.UserDB.Exec("UPDATE users SET role=? WHERE username=?", newRole, username)
 	if err != nil {
 		http.Error(w, "角色更新失败", http.StatusInternalServerError)
 		return
 	}
 
-	// 2) 更新部门映射
-	_, _ = a.UserDB.Exec(`DELETE FROM user_departments 
-					  WHERE user_id=(SELECT id FROM users WHERE username=?)`, username)
+	_, _ = a.UserDB.Exec(`
+		DELETE FROM user_departments 
+		WHERE user_id=(SELECT id FROM users WHERE username=?)`, username)
+
 	for _, deptName := range selectedDepts {
 		_, _ = a.UserDB.Exec(`
 			INSERT OR IGNORE INTO user_departments(user_id, dept_id)
@@ -101,25 +112,53 @@ func (a *AdminHandler) updateRoleHandler(w http.ResponseWriter, r *http.Request)
 			WHERE u.username=? AND d.name=?`,
 			username, deptName)
 	}
+	depts, _ := a.getDepartmentsForUser(username)
+	// deptsStr := strings.Join(depts, ", ")
+	// Compute selected attributes for role dropdown
+	adminSelected := ""
+	userSelected := ""
+	if newRole == "admin" {
+		adminSelected = "selected"
+	}
+	if newRole == "user" {
+		userSelected = "selected"
+	}
 
-	// 3) 返回整行片段 (HTMX)：重渲染该用户行
-	deptsStr := strings.Join(selectedDepts, ", ")
+	// Return the complete <tr> HTML
 	fmt.Fprintf(w, `
-	<td class="border px-4 py-2">%s</td>
-	<td class="border px-4 py-2">%s</td>
-	<td class="border px-4 py-2">%s</td>`,
-		username, newRole, deptsStr)
+<tr hx-target="this" hx-swap="outerHTML">
+  <form hx-post="/admin/update-role" class="flex items-center gap-2">
+    <td class="border px-4 py-2">%s</td>
+    <td class="border px-4 py-2">
+      <input type="hidden" name="username" value="%s">
+      <select name="role" class="border rounded p-1">
+        <option value="admin" %s>Admin</option>
+        <option value="user" %s>User</option>
+      </select>
+    </td>
+    <td class="border px-4 py-2">
+      <select name="departments[]" multiple size="3" class="border rounded p-1">
+        %s
+      </select>
+    </td>
+    <td class="border px-4 py-2">
+      <button class="px-3 py-1 bg-blue-600 text-white rounded">保存</button>
+    </td>
+  </form>
+</tr>`,
+		username, username,
+		adminSelected, userSelected,
+		a.generateDeptOptions(depts))
 }
 
-/* ---------- 数据库辅助 ---------- */
-
+// 查询某用户所属部门
 func (a *AdminHandler) getDepartmentsForUser(username string) ([]string, error) {
 	rows, err := a.UserDB.Query(`
 		SELECT d.name
-		  FROM departments d
-		  JOIN user_departments ud ON d.id = ud.dept_id
-		  JOIN users u ON u.id = ud.user_id
-		 WHERE u.username = ?`, username)
+		FROM departments d
+		JOIN user_departments ud ON d.id = ud.dept_id
+		JOIN users u ON u.id = ud.user_id
+		WHERE u.username = ?`, username)
 	if err != nil {
 		return nil, err
 	}
@@ -128,12 +167,14 @@ func (a *AdminHandler) getDepartmentsForUser(username string) ([]string, error) 
 	var list []string
 	for rows.Next() {
 		var name string
-		rows.Scan(&name)
-		list = append(list, name)
+		if err := rows.Scan(&name); err == nil {
+			list = append(list, name)
+		}
 	}
 	return list, nil
 }
 
+// 获取所有部门
 func (a *AdminHandler) getAllDepartments() ([]Department, error) {
 	rows, err := a.UserDB.Query("SELECT id, name FROM departments ORDER BY name")
 	if err != nil {
@@ -144,15 +185,14 @@ func (a *AdminHandler) getAllDepartments() ([]Department, error) {
 	var list []Department
 	for rows.Next() {
 		var d Department
-		rows.Scan(&d.ID, &d.Name)
-		list = append(list, d)
+		if err := rows.Scan(&d.ID, &d.Name); err == nil {
+			list = append(list, d)
+		}
 	}
 	return list, nil
 }
 
-/* ---------- 工具函数 ---------- */
-
-// currentUser 从 session cookie 中解析 "username|role"
+// 从 cookie 中获取当前用户信息
 func currentUser(r *http.Request) (string, string) {
 	c, err := r.Cookie("session")
 	if err != nil {
@@ -163,4 +203,21 @@ func currentUser(r *http.Request) (string, string) {
 		return "", ""
 	}
 	return parts[0], parts[1]
+}
+
+// 生成部门选项 HTML
+func (a *AdminHandler) generateDeptOptions(selectedDepts []string) string {
+	depts, _ := a.getAllDepartments()
+	var options strings.Builder
+	for _, dept := range depts {
+		selected := ""
+		for _, sel := range selectedDepts {
+			if sel == dept.Name {
+				selected = "selected"
+				break
+			}
+		}
+		options.WriteString(fmt.Sprintf(`<option value="%s" %s>%s</option>`, dept.Name, selected, dept.Name))
+	}
+	return options.String()
 }

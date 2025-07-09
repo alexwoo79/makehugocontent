@@ -1,55 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>用户管理</title>
-    <link rel="stylesheet" href="/admin/css/output.css">
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <meta charset="utf-8">
+  <title>用户管理</title>
+  <link rel="stylesheet" href="/admin/css/output.css">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body class="p-8">
-<h2 class="text-2xl font-bold mb-4">用户列表</h2>
-<table class="table-auto border w-full">
-  <thead>
-    <tr>
-      <th class="border px-4 py-2">用户名</th>
-      <th class="border px-4 py-2">角色</th>
-      <th class="border px-4 py-2">部门</th>
-      <th class="border px-4 py-2">操作</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{range .Users}}
-    <tr hx-target="this" hx-swap="outerHTML">
-      <form hx-post="/admin/update-role">
-        <td class="border px-4 py-2">
-          {{.Username}}
-          <input type="hidden" name="username" value="{{.Username}}">
-        </td>
+  <h2 class="text-2xl font-bold mb-4">用户列表</h2>
 
-        <td class="border px-4 py-2">
-          <select name="role" class="border rounded p-1">
-            <option value="editor" {{if eq .Role "editor"}}selected{{end}}>editor</option>
-            <option value="viewer" {{if eq .Role "viewer"}}selected{{end}}>viewer</option>
-            <option value="admin"  {{if eq .Role "admin"}}selected{{end}}>admin</option>
-          </select>
-        </td>
+  <table class="table-auto border w-full">
+    <thead>
+      <tr>
+        <th class="border px-4 py-2">用户名</th>
+        <th class="border px-4 py-2">角色</th>
+        <th class="border px-4 py-2">部门</th>
+        <th class="border px-4 py-2">操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Users}}
+<tr hx-target="this" hx-swap="outerHTML">
+  <form hx-post="/admin/update-role" class="flex items-center gap-2">
+    <td class="border px-4 py-2">{{.Username}}</td>
+    <td class="border px-4 py-2">
+      <input type="hidden" name="username" value="{{.Username}}">
+      <select name="role" class="border rounded p-1">
+        <option value="admin" {{if eq .Role "admin"}}selected{{end}}>Admin</option>
+        <option value="user" {{if eq .Role "user"}}selected{{end}}>User</option>
+      </select>
+    </td>
+    <td class="border px-4 py-2">
+      <select name="departments[]" multiple size="3" class="border rounded p-1">
+        {{range $.Departments}}
+          <option value="{{.Name}}" {{if index $.SelectedDept .Name}}selected{{end}}>{{.Name}}</option>
+        {{end}}
+      </select>
+    </td>
+    <td class="border px-4 py-2">
+      <button class="px-3 py-1 bg-blue-600 text-white rounded">保存</button>
+    </td>
+  </form>
+</tr>
+{{end}}
 
-        <td class="border px-4 py-2">
-          <select name="departments" multiple size="3" class="border rounded p-1">
-            {{range $.Departments}}
-              <option value="{{.Name}}" {{if (contains .Name $.Users.Get .Username).Departments}}selected{{end}}>{{.Name}}</option>
-            {{end}}
-          </select>
-        </td>
-
-        <td class="border px-4 py-2">
-          <button class="px-3 py-1 bg-blue-600 text-white rounded">保存</button>
-        </td>
-      </form>
-    </tr>
-    {{end}}
-  </tbody>
-</table>
-    </body>
+    </tbody>
+  </table>
+</body>
 </html>
-

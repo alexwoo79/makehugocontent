@@ -21,6 +21,7 @@ func contains(target string, list []string) bool {
 func main() {
 	// 1. 初始化数据库
 	database.Init()
+	
 
 	tmpl := template.New("").Funcs(template.FuncMap{"contains": contains})
 	tmpl = template.Must(tmpl.ParseGlob("templates/*.html"))
