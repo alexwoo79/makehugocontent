@@ -9,33 +9,47 @@
 <body class="p-8">
 <h2 class="text-2xl font-bold mb-4">用户列表</h2>
 <table class="table-auto border w-full">
-    <thead>
-        <tr>
-            <th class="border px-4 py-2">用户名</th>
-            <th class="border px-4 py-2">当前角色</th>
-            <th class="border px-4 py-2">修改角色</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{range .}}
-        <tr>
-            <td class="border px-4 py-2">{{.Username}}</td>
-            <td class="border px-4 py-2">{{.Role}}</td>
-            <td class="border px-4 py-2">
-                <form hx-post="/admin/update-role" hx-target="this" hx-swap="outerHTML">
-                    <input type="hidden" name="username" value="{{.Username}}">
-                    <select name="role" class="border rounded p-1">
-                        <option value="editor" {{if eq .Role "editor"}}selected{{end}}>editor</option>
-                        <option value="viewer" {{if eq .Role "viewer"}}selected{{end}}>viewer</option>
-                        <option value="admin" {{if eq .Role "admin"}}selected{{end}}>admin</option>
-                    </select>
-                    <button class="ml-2 px-2 py-1 bg-blue-600 text-white rounded">更新</button>
-                </form>
-            </td>
-        </tr>
-        {{end}}
-    </tbody>
+  <thead>
+    <tr>
+      <th class="border px-4 py-2">用户名</th>
+      <th class="border px-4 py-2">角色</th>
+      <th class="border px-4 py-2">部门</th>
+      <th class="border px-4 py-2">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .Users}}
+    <tr hx-target="this" hx-swap="outerHTML">
+      <form hx-post="/admin/update-role">
+        <td class="border px-4 py-2">
+          {{.Username}}
+          <input type="hidden" name="username" value="{{.Username}}">
+        </td>
+
+        <td class="border px-4 py-2">
+          <select name="role" class="border rounded p-1">
+            <option value="editor" {{if eq .Role "editor"}}selected{{end}}>editor</option>
+            <option value="viewer" {{if eq .Role "viewer"}}selected{{end}}>viewer</option>
+            <option value="admin"  {{if eq .Role "admin"}}selected{{end}}>admin</option>
+          </select>
+        </td>
+
+        <td class="border px-4 py-2">
+          <select name="departments" multiple size="3" class="border rounded p-1">
+            {{range $.Departments}}
+              <option value="{{.Name}}" {{if (contains .Name $.Users.Get .Username).Departments}}selected{{end}}>{{.Name}}</option>
+            {{end}}
+          </select>
+        </td>
+
+        <td class="border px-4 py-2">
+          <button class="px-3 py-1 bg-blue-600 text-white rounded">保存</button>
+        </td>
+      </form>
+    </tr>
+    {{end}}
+  </tbody>
 </table>
-</body>
+    </body>
 </html>
 

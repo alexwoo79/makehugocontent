@@ -9,11 +9,22 @@ import (
 	"net/http"
 )
 
+func contains(target string, list []string) bool {
+	for _, v := range list {
+		if v == target {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	// 1. 初始化数据库
 	database.Init()
-	// 定义模版
-	tmpl := template.Must(template.ParseGlob("templates/*.html"))
+
+	tmpl := template.New("").Funcs(template.FuncMap{"contains": contains})
+	tmpl = template.Must(tmpl.ParseGlob("templates/*.html"))
+
 	// 2. 使用自定义 mux
 
 	adminHandler := &admin.AdminHandler{UserDB: database.UserDB, Tmpl: tmpl}

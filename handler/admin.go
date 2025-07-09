@@ -8,28 +8,42 @@ import (
 	"strings"
 )
 
+// AdminHandler 处理 users.db 数据库中的用户管理相关操作
 type AdminHandler struct {
-	Tmpl   *template.Template
 	UserDB *sql.DB
+	Tmpl   *template.Template
 }
 
+/* ---------- 数据模型 ---------- */
+
 type User struct {
-	Username string
-	Role     string
+	Username    string
+	Role        string
+	Departments []string
 }
+
+type Department struct {
+	ID   int
+	Name string
+}
+
+/* ---------- 路由注册 ---------- */
 
 func (a *AdminHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/users", a.usersHandler)
 	mux.HandleFunc("/admin/update-role", a.updateRoleHandler)
 }
 
+/* ---------- 页面：用户列表 ---------- */
+
 func (a *AdminHandler) usersHandler(w http.ResponseWriter, r *http.Request) {
-	_, role := getCurrentUser(r)
+	_, role := currentUser(r)
 	if role != "admin" {
 		http.Error(w, "管理员专用", http.StatusForbidden)
 		return
 	}
 
+	// 1. 查询所有用户
 	rows, err := a.UserDB.Query("SELECT username, role FROM users ORDER BY username")
 	if err != nil {
 		http.Error(w, "数据库查询失败", http.StatusInternalServerError)
@@ -41,81 +55,105 @@ func (a *AdminHandler) usersHandler(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var u User
 		rows.Scan(&u.Username, &u.Role)
+		u.Departments, _ = a.getDepartmentsForUser(u.Username)
 		users = append(users, u)
 	}
 
-	err = a.Tmpl.ExecuteTemplate(w, "users.html", users)
-	if err != nil {
-		http.Error(w, "模板渲染错误", http.StatusInternalServerError)
+	// 2. 查询所有部门（渲染多选框）
+	allDepts, _ := a.getAllDepartments()
+
+	data := map[string]any{
+		"Users":       users,
+		"Departments": allDepts,
 	}
+	a.Tmpl.ExecuteTemplate(w, "users.html", data)
 }
 
+/* ---------- 接口：修改角色 / 部门 ---------- */
+
 func (a *AdminHandler) updateRoleHandler(w http.ResponseWriter, r *http.Request) {
-	// 限制为 POST 方法
-	if r.Method != http.MethodPost {
-		http.Error(w, "只允许 POST 请求", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// 确保是 HTMX 请求（防止浏览器或非预期客户端直接 POST）
-	if r.Header.Get("HX-Request") != "true" {
-		http.Error(w, "非法请求：仅支持 HTMX", http.StatusBadRequest)
-		return
-	}
-
-	// 权限校验
-	_, role := getCurrentUser(r)
+	_, role := currentUser(r)
 	if role != "admin" {
 		http.Error(w, "权限不足", http.StatusForbidden)
 		return
 	}
+	r.ParseForm()
 
-	// 获取并验证表单参数
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "请求参数解析失败", http.StatusBadRequest)
-		return
-	}
 	username := r.FormValue("username")
 	newRole := r.FormValue("role")
-	if username == "" || newRole == "" {
-		http.Error(w, "缺少必要参数", http.StatusBadRequest)
-		return
-	}
+	selectedDepts := r.Form["departments"] // 多选框 names="departments"
 
-	// 执行数据库更新
+	// 1) 更新角色
 	_, err := a.UserDB.Exec("UPDATE users SET role=? WHERE username=?", newRole, username)
 	if err != nil {
-		http.Error(w, "数据库更新失败", http.StatusInternalServerError)
+		http.Error(w, "角色更新失败", http.StatusInternalServerError)
 		return
 	}
 
-	// 返回更新后的表单 HTML，HTMX 自动替换页面
-	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, `
-		<form hx-post="/admin/update-role" hx-target="this" hx-swap="outerHTML">
-			<input type="hidden" name="username" value="%s">
-			<select name="role" class="border rounded p-1">
-				<option value="editor" %s>editor</option>
-				<option value="viewer" %s>viewer</option>
-				<option value="admin" %s>admin</option>
-			</select>
-			<button class="ml-2 px-2 py-1 bg-green-600 text-white rounded">更新</button>
-		</form>`,
-		username,
-		boolToSelected(newRole == "editor"),
-		boolToSelected(newRole == "viewer"),
-		boolToSelected(newRole == "admin"),
-	)
-}
-
-func boolToSelected(ok bool) string {
-	if ok {
-		return "selected"
+	// 2) 更新部门映射
+	_, _ = a.UserDB.Exec(`DELETE FROM user_departments 
+					  WHERE user_id=(SELECT id FROM users WHERE username=?)`, username)
+	for _, deptName := range selectedDepts {
+		_, _ = a.UserDB.Exec(`
+			INSERT OR IGNORE INTO user_departments(user_id, dept_id)
+			SELECT u.id, d.id 
+			FROM users u, departments d
+			WHERE u.username=? AND d.name=?`,
+			username, deptName)
 	}
-	return ""
+
+	// 3) 返回整行片段 (HTMX)：重渲染该用户行
+	deptsStr := strings.Join(selectedDepts, ", ")
+	fmt.Fprintf(w, `
+	<td class="border px-4 py-2">%s</td>
+	<td class="border px-4 py-2">%s</td>
+	<td class="border px-4 py-2">%s</td>`,
+		username, newRole, deptsStr)
 }
 
-func getCurrentUser(r *http.Request) (string, string) {
+/* ---------- 数据库辅助 ---------- */
+
+func (a *AdminHandler) getDepartmentsForUser(username string) ([]string, error) {
+	rows, err := a.UserDB.Query(`
+		SELECT d.name
+		  FROM departments d
+		  JOIN user_departments ud ON d.id = ud.dept_id
+		  JOIN users u ON u.id = ud.user_id
+		 WHERE u.username = ?`, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []string
+	for rows.Next() {
+		var name string
+		rows.Scan(&name)
+		list = append(list, name)
+	}
+	return list, nil
+}
+
+func (a *AdminHandler) getAllDepartments() ([]Department, error) {
+	rows, err := a.UserDB.Query("SELECT id, name FROM departments ORDER BY name")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []Department
+	for rows.Next() {
+		var d Department
+		rows.Scan(&d.ID, &d.Name)
+		list = append(list, d)
+	}
+	return list, nil
+}
+
+/* ---------- 工具函数 ---------- */
+
+// currentUser 从 session cookie 中解析 "username|role"
+func currentUser(r *http.Request) (string, string) {
 	c, err := r.Cookie("session")
 	if err != nil {
 		return "", ""
