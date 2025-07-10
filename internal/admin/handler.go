@@ -143,13 +143,17 @@ func (a *AdminHandler) updateRoleHandler(w http.ResponseWriter, r *http.Request)
 			username, deptName)
 	}
 
-	// 3) 返回整行片段 (HTMX)：重渲染该用户行
-	deptsStr := strings.Join(selectedDepts, ", ")
-	fmt.Fprintf(w, `
-	<td class="border px-4 py-2">%s</td>
-	<td class="border px-4 py-2">%s</td>
-	<td class="border px-4 py-2">%s</td>`,
-		username, newRole, deptsStr)
+// 返回整行片段 (HTMX)：重渲染该用户行
+deptsStr := strings.Join(selectedDepts, ", ")
+fmt.Fprintf(w, `
+	<tr hx-target="this" hx-swap="outerHTML">
+		<form hx-post="/admin/update-role">
+			<td class="border px-4 py-2">%s</td>
+			<td class="border px-4 py-2">%s</td>
+			<td class="border px-4 py-2">%s</td>
+		</form>
+	</tr>`,
+	username, newRole, deptsStr)
 }
 
 /* ---------- 数据库辅助 ---------- */

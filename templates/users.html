@@ -1,60 +1,66 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="utf-8">
-    <title>用户管理</title>
-    <link rel="stylesheet" href="/admin/css/output.css">
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <meta charset="utf-8">
+  <title>用户管理</title>
+  <link rel="stylesheet" href="/admin/css/output.css">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
-<body class="p-8">
-<h2 class="text-2xl font-bold mb-4">用户列表</h2>
-<table class="table-auto border w-full">
-  <thead>
-    <tr>
-      <th class="border px-4 py-2">用户名</th>
-      <th class="border px-4 py-2">角色</th>
-      <th class="border px-4 py-2">部门</th>
-      <th class="border px-4 py-2">操作</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{range .Users}}
-    {{ $user := . }}
-  <tr hx-target="this" hx-swap="outerHTML">
-    <form hx-post="/admin/update-role">
-      <td class="border px-4 py-2">
-        {{ $user.Username }}
-        <input type="hidden" name="username" value="{{ $user.Username }}">
-      </td>
 
-      <td class="border px-4 py-2">
-        <select name="role" class="border rounded p-1">
-          <option value="editor" {{if eq $user.Role "editor"}}selected{{end}}>editor</option>
-          <option value="viewer" {{if eq $user.Role "viewer"}}selected{{end}}>viewer</option>
-          <option value="admin"  {{if eq $user.Role "admin"}}selected{{end}}>admin</option>
-        </select>
-      </td>
+<body class="bg-gray-50 min-h-screen">
 
-      <td class="border px-4 py-2">
-        <select name="departments" multiple size="3" class="border rounded p-1">
-          {{range $.Departments}}
-            {{ $dept := . }}
-            {{ if contains (index $.UserDeptMap $user.Username) $dept }}
-              <option value="{{$dept}}" selected>{{$dept}}</option>
-            {{else}}
-              <option value="{{$dept}}">{{$dept}}</option>
-            {{end}}
-          {{end}}
-        </select>
-      </td>
+  <div class="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+    <h2 class="text-2xl font-bold mb-4">用户列表</h2>
+    <table class="table-auto border w-full">
+      <thead>
+        <tr>
+          <th class="border px-4 py-2">用户名</th>
+          <th class="border px-4 py-2">角色</th>
+          <th class="border px-4 py-2">部门</th>
+          <th class="border px-4 py-2">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Users}}
+        {{ $user := . }}
+        <tr hx-target="this" hx-swap="outerHTML">
+          <form hx-post="/admin/update-role">
+            <td class="border px-4 py-2 ">
+              {{ $user.Username }}
+              <input type="hidden" name="username" value="{{ $user.Username }}">
+            </td>
 
-      <td class="border px-4 py-2">
-        <button class="px-3 py-1 bg-blue-600 text-white rounded">保存</button>
-      </td>
-    </form>
-  </tr>
-    {{end}}
-  </tbody>
-</table>
+            <td class="border px-4 py-2">
+              <select name="role" class="border rounded p-1 ">
+                <option value="editor" {{if eq $user.Role "editor" }}selected{{end}}>editor</option>
+                <option value="viewer" {{if eq $user.Role "viewer" }}selected{{end}}>viewer</option>
+                <option value="admin" {{if eq $user.Role "admin" }}selected{{end}}>admin</option>
+              </select>
+            </td>
+
+            <td class="border px-4 py-2">
+              <select name="departments" multiple size="3" class="border rounded p-1 w-full">
+                {{range $.Departments}}
+                {{ $dept := . }}
+                {{ if contains (index $.UserDeptMap $user.Username) $dept }}
+                <option value="{{$dept}}" selected>{{$dept}}</option>
+                {{else}}
+                <option value="{{$dept}}">{{$dept}}</option>
+                {{end}}
+                {{end}}
+              </select>
+            </td>
+
+            <td class="border px-4 py-2">
+              <button class="px-3 py-1 bg-blue-600 text-white rounded ">保存</button>
+            </td>
+          </form>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
 </body>
+</div>
+
 </html>
