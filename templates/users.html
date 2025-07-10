@@ -19,37 +19,42 @@
   </thead>
   <tbody>
     {{range .Users}}
-    <tr hx-target="this" hx-swap="outerHTML">
-      <form hx-post="/admin/update-role">
-        <td class="border px-4 py-2">
-          {{.Username}}
-          <input type="hidden" name="username" value="{{.Username}}">
-        </td>
+    {{ $user := . }}
+  <tr hx-target="this" hx-swap="outerHTML">
+    <form hx-post="/admin/update-role">
+      <td class="border px-4 py-2">
+        {{ $user.Username }}
+        <input type="hidden" name="username" value="{{ $user.Username }}">
+      </td>
 
-        <td class="border px-4 py-2">
-          <select name="role" class="border rounded p-1">
-            <option value="editor" {{if eq .Role "editor"}}selected{{end}}>editor</option>
-            <option value="viewer" {{if eq .Role "viewer"}}selected{{end}}>viewer</option>
-            <option value="admin"  {{if eq .Role "admin"}}selected{{end}}>admin</option>
-          </select>
-        </td>
+      <td class="border px-4 py-2">
+        <select name="role" class="border rounded p-1">
+          <option value="editor" {{if eq $user.Role "editor"}}selected{{end}}>editor</option>
+          <option value="viewer" {{if eq $user.Role "viewer"}}selected{{end}}>viewer</option>
+          <option value="admin"  {{if eq $user.Role "admin"}}selected{{end}}>admin</option>
+        </select>
+      </td>
 
-        <td class="border px-4 py-2">
-          <select name="departments" multiple size="3" class="border rounded p-1">
-            {{range $.Departments}}
-              <option value="{{.Name}}" {{if (contains .Name $.Users.Get .Username).Departments}}selected{{end}}>{{.Name}}</option>
+      <td class="border px-4 py-2">
+        <select name="departments" multiple size="3" class="border rounded p-1">
+          {{range $.Departments}}
+            {{ $dept := . }}
+            {{ if contains (index $.UserDeptMap $user.Username) $dept }}
+              <option value="{{$dept}}" selected>{{$dept}}</option>
+            {{else}}
+              <option value="{{$dept}}">{{$dept}}</option>
             {{end}}
-          </select>
-        </td>
+          {{end}}
+        </select>
+      </td>
 
-        <td class="border px-4 py-2">
-          <button class="px-3 py-1 bg-blue-600 text-white rounded">保存</button>
-        </td>
-      </form>
-    </tr>
+      <td class="border px-4 py-2">
+        <button class="px-3 py-1 bg-blue-600 text-white rounded">保存</button>
+      </td>
+    </form>
+  </tr>
     {{end}}
   </tbody>
 </table>
-    </body>
+</body>
 </html>
-

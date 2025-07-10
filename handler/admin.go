@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -16,7 +17,7 @@ type AdminHandler struct {
 
 /* ---------- 数据模型 ---------- */
 
-type User struct {
+type UserWithDepartments struct {
 	Username    string
 	Role        string
 	Departments []string
@@ -27,6 +28,11 @@ type Department struct {
 	Name string
 }
 
+type UserPageData struct {
+	Users       []UserWithDepartments
+	Departments []Department
+}
+
 /* ---------- 路由注册 ---------- */
 
 func (a *AdminHandler) RegisterRoutes(mux *http.ServeMux) {
@@ -35,15 +41,14 @@ func (a *AdminHandler) RegisterRoutes(mux *http.ServeMux) {
 }
 
 /* ---------- 页面：用户列表 ---------- */
-
 func (a *AdminHandler) usersHandler(w http.ResponseWriter, r *http.Request) {
-	_, role := currentUser(r)
+	_, role := getCurrentUser(r)
 	if role != "admin" {
 		http.Error(w, "管理员专用", http.StatusForbidden)
 		return
 	}
 
-	// 1. 查询所有用户
+	// 获取用户信息
 	rows, err := a.UserDB.Query("SELECT username, role FROM users ORDER BY username")
 	if err != nil {
 		http.Error(w, "数据库查询失败", http.StatusInternalServerError)
@@ -51,28 +56,52 @@ func (a *AdminHandler) usersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var users []User
+	var users []UserWithDepartments
 	for rows.Next() {
-		var u User
+		var u UserWithDepartments
 		rows.Scan(&u.Username, &u.Role)
-		u.Departments, _ = a.getDepartmentsForUser(u.Username)
+		depts, _ := a.getDepartmentsForUser(u.Username)
+		u.Departments = depts
 		users = append(users, u)
 	}
 
-	// 2. 查询所有部门（渲染多选框）
-	allDepts, _ := a.getAllDepartments()
-
-	data := map[string]any{
-		"Users":       users,
-		"Departments": allDepts,
+	// 获取所有部门
+	deptRows, err := a.UserDB.Query("SELECT name FROM departments ORDER BY name")
+	if err != nil {
+		http.Error(w, "部门查询失败", http.StatusInternalServerError)
+		return
 	}
-	a.Tmpl.ExecuteTemplate(w, "users.html", data)
+	defer deptRows.Close()
+
+	var departments []Department
+	for deptRows.Next() {
+		var d Department
+		deptRows.Scan(&d.Name)
+		departments = append(departments, d)
+	}
+
+	// 渲染用户页面
+	data := UserPageData{
+		Users:       users,
+		Departments: departments,
+	}
+	err = a.Tmpl.ExecuteTemplate(w, "users.html", data)
+	if err != nil {
+		http.Error(w, "模板渲染错误: "+err.Error(), http.StatusInternalServerError)
+	}
+	fmt.Println("用户数量:", len(users))
+	for _, u := range users {
+		fmt.Println("用户:", u.Username, "角色:", u.Role, "部门:", u.Departments)
+	}
+	if len(users) == 0 {
+		log.Println("没有加载到任何用户")
+	}
 }
 
 /* ---------- 接口：修改角色 / 部门 ---------- */
 
 func (a *AdminHandler) updateRoleHandler(w http.ResponseWriter, r *http.Request) {
-	_, role := currentUser(r)
+	_, role := getCurrentUser(r)
 	if role != "admin" {
 		http.Error(w, "权限不足", http.StatusForbidden)
 		return
@@ -116,10 +145,10 @@ func (a *AdminHandler) updateRoleHandler(w http.ResponseWriter, r *http.Request)
 func (a *AdminHandler) getDepartmentsForUser(username string) ([]string, error) {
 	rows, err := a.UserDB.Query(`
 		SELECT d.name
-		  FROM departments d
-		  JOIN user_departments ud ON d.id = ud.dept_id
-		  JOIN users u ON u.id = ud.user_id
-		 WHERE u.username = ?`, username)
+		FROM users u
+		LEFT JOIN user_departments ud ON u.id = ud.user_id
+		LEFT JOIN departments d ON ud.dept_id = d.id
+		WHERE u.username = ?`, username)
 	if err != nil {
 		return nil, err
 	}
@@ -127,9 +156,13 @@ func (a *AdminHandler) getDepartmentsForUser(username string) ([]string, error) 
 
 	var list []string
 	for rows.Next() {
-		var name string
-		rows.Scan(&name)
-		list = append(list, name)
+		var name sql.NullString
+		if err := rows.Scan(&name); err != nil {
+			return nil, err
+		}
+		if name.Valid {
+			list = append(list, name.String)
+		}
 	}
 	return list, nil
 }
@@ -153,7 +186,7 @@ func (a *AdminHandler) getAllDepartments() ([]Department, error) {
 /* ---------- 工具函数 ---------- */
 
 // currentUser 从 session cookie 中解析 "username|role"
-func currentUser(r *http.Request) (string, string) {
+func getCurrentUser(r *http.Request) (string, string) {
 	c, err := r.Cookie("session")
 	if err != nil {
 		return "", ""

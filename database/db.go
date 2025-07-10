@@ -8,8 +8,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var DataDB *sql.DB //文章列表数据库
-var UserDB *sql.DB //用户数据库
+var (
+	DataDB *sql.DB // 文章列表数据库
+	UserDB *sql.DB // 用户数据库
+)
 
 func Init() {
 	var err error
@@ -27,7 +29,7 @@ func Init() {
 		role TEXT
 		);`)
 
-	//创建部门表
+	// 创建部门表
 	_, _ = UserDB.Exec(`
 		CREATE TABLE IF NOT EXISTS departments (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,7 +46,7 @@ func Init() {
 				UNIQUE(user_id, dept_id)
 				);`)
 
-	//创建一些部门
+	// 创建一些部门
 	_, _ = UserDB.Exec(`
 				INSERT OR IGNORE INTO departments (name) VALUES
 				('general'),
@@ -84,5 +86,35 @@ func Init() {
 		author TEXT,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`)
+}
 
+func InsertTestUsers() {
+	users := []struct {
+		Username    string
+		Password    string
+		Role        string
+		Departments []string
+	}{
+		{"alice", "123456", "viewer", []string{"pm"}},
+		{"bob", "123456", "editor", []string{"cz", "bim"}},
+		{"carol", "123456", "admin", []string{"general", "cz", "pm"}},
+	}
+
+	for _, u := range users {
+		hash, _ := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+		res, err := UserDB.Exec("INSERT OR IGNORE INTO users(username, password, role) VALUES(?, ?, ?)", u.Username, hash, u.Role)
+		if err != nil {
+			log.Println("插入用户失败:", u.Username, err)
+			continue
+		}
+		uid, _ := res.LastInsertId()
+
+		for _, dept := range u.Departments {
+			var deptID int
+			err := UserDB.QueryRow("SELECT id FROM departments WHERE name=?", dept).Scan(&deptID)
+			if err == nil {
+				_, _ = UserDB.Exec("INSERT OR IGNORE INTO user_departments(user_id, dept_id) VALUES(?, ?)", uid, deptID)
+			}
+		}
+	}
 }

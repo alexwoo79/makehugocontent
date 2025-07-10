@@ -36,5 +36,4 @@ func RegisterRoutes(mux *http.ServeMux, tmpl *template.Template, userDB, dataDB 
 	mux.HandleFunc("/admin/update", contentHandler.UpdateHandler)
 	mux.HandleFunc("/admin/delete", contentHandler.DeleteHandler)
 	mux.HandleFunc("/admin/export", handler.ExportCSVHandler)
-
 }
