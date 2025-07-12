@@ -44,12 +44,13 @@ type UserPageData struct {
 func (a *AdminHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/admin/users", a.usersHandler)
 	mux.HandleFunc("/admin/update-role", a.updateRoleHandler)
+	mux.HandleFunc("/admin/delete-user", a.deleteUserHandler)
 }
 
 /* ---------- 页面：用户列表 ---------- */
 
 func (a *AdminHandler) usersHandler(w http.ResponseWriter, r *http.Request) {
-	_, role := getCurrentUser(r)
+	_, role := GetCurrentUser(r)
 	if role != "admin" {
 		http.Error(w, "管理员专用", http.StatusForbidden)
 		return
@@ -113,7 +114,7 @@ func (a *AdminHandler) usersHandler(w http.ResponseWriter, r *http.Request) {
 /* ---------- 接口：修改角色 / 部门 ---------- */
 
 func (a *AdminHandler) updateRoleHandler(w http.ResponseWriter, r *http.Request) {
-	_, role := getCurrentUser(r)
+	_, role := GetCurrentUser(r)
 	if role != "admin" {
 		http.Error(w, "权限不足", http.StatusForbidden)
 		return
@@ -143,9 +144,9 @@ func (a *AdminHandler) updateRoleHandler(w http.ResponseWriter, r *http.Request)
 			username, deptName)
 	}
 
-// 返回整行片段 (HTMX)：重渲染该用户行
-deptsStr := strings.Join(selectedDepts, ", ")
-fmt.Fprintf(w, `
+	// 返回整行片段 (HTMX)：重渲染该用户行
+	deptsStr := strings.Join(selectedDepts, ", ")
+	fmt.Fprintf(w, `
 	<tr hx-target="this" hx-swap="outerHTML">
 		<form hx-post="/admin/update-role">
 			<td class="border px-4 py-2">%s</td>
@@ -153,7 +154,7 @@ fmt.Fprintf(w, `
 			<td class="border px-4 py-2">%s</td>
 		</form>
 	</tr>`,
-	username, newRole, deptsStr)
+		username, newRole, deptsStr)
 }
 
 /* ---------- 数据库辅助 ---------- */
@@ -202,7 +203,7 @@ func (a *AdminHandler) getAllDepartments() ([]Department, error) {
 /* ---------- 工具函数 ---------- */
 
 // currentUser 从 session cookie 中解析 "username|role"
-func getCurrentUser(r *http.Request) (string, string) {
+func GetCurrentUser(r *http.Request) (string, string) {
 	c, err := r.Cookie("session")
 	if err != nil {
 		return "", ""
@@ -212,4 +213,23 @@ func getCurrentUser(r *http.Request) (string, string) {
 		return "", ""
 	}
 	return parts[0], parts[1]
+}
+
+func (a *AdminHandler) deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	_, role := GetCurrentUser(r)
+	if role != "admin" {
+		http.Error(w, "无权限", http.StatusForbidden)
+		return
+	}
+	r.ParseForm()
+	username := r.FormValue("username")
+	if username == "admin" {
+		http.Error(w, "不能删除超级管理员", http.StatusForbidden)
+		return
+	}
+
+	// 删除部门关联
+	_, _ = a.UserDB.Exec("DELETE FROM user_departments WHERE user_id = (SELECT id FROM users WHERE username=?)", username)
+	// 删除用户
+	_, _ = a.UserDB.Exec("DELETE FROM users WHERE username=?", username)
 }

@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"makehugocontent/database"
 	"net/http"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -37,7 +38,8 @@ func (a *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Path:  "/",
 	})
 
-	http.Redirect(w, r, "/admin/content", http.StatusSeeOther)
+	// 登录成功后，重定向到 /home 页面
+	http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
 // 注册
@@ -50,10 +52,36 @@ func (a *AuthHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	pass := r.FormValue("password")
 	hash, _ := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
 
-	_, err := database.UserDB.Exec("INSERT INTO users(username,password,role)VALUES(?,?,?)", user, hash, "editor")
+	_, err := database.UserDB.Exec("INSERT INTO users(username,password,role)VALUES(?,?,?)", user, hash, "viewer")
 	if err != nil {
 		a.Tmpl.ExecuteTemplate(w, "register.html", "注册失败："+err.Error())
 		return
 	}
+
 	http.Redirect(w, r, "/admin/login", http.StatusSeeOther)
+}
+
+// 验证用户权限
+
+func checkRole(r *http.Request, allowedRoles []string) bool {
+	// 获取当前用户的 session
+	c, err := r.Cookie("session")
+	if err != nil {
+		return false
+	}
+	// 解析 session 内容
+	parts := strings.Split(c.Value, "|")
+	if len(parts) != 2 {
+		return false
+	}
+
+	role := parts[1] // 获取 role
+
+	// 判断当前用户角色是否在允许的角色列表中
+	for _, allowedRole := range allowedRoles {
+		if role == allowedRole {
+			return true
+		}
+	}
+	return false
 }

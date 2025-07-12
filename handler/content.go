@@ -33,6 +33,10 @@ func (c *ContentHandler) ContentListHandler(w http.ResponseWriter, r *http.Reque
 	if !checkLogin(w, r) {
 		return
 	}
+	if !checkRole(r, []string{"admin", "editor"}) {
+		http.Error(w, "管理员专用", http.StatusSeeOther)
+		return
+	}
 
 	rows, err := utils.ScanDir(CONTENT_PATH)
 	if err != nil {
@@ -68,6 +72,7 @@ func (c *ContentHandler) ContentListHandler(w http.ResponseWriter, r *http.Reque
 		http.Error(w, "页面渲染失败", http.StatusInternalServerError)
 	}
 }
+
 func (c *ContentHandler) EditPageHandler(w http.ResponseWriter, r *http.Request) {
 	if !checkLogin(w, r) {
 		return
@@ -94,6 +99,10 @@ func (c *ContentHandler) EditPageHandler(w http.ResponseWriter, r *http.Request)
 
 func (c *ContentHandler) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if !checkLogin(w, r) {
+		return
+	}
+	if !checkRole(r, []string{"admin", "editor"}) {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 	r.ParseForm()

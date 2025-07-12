@@ -22,6 +22,8 @@ func RegisterRoutes(mux *http.ServeMux, tmpl *template.Template, userDB, dataDB 
 		Tmpl:   tmpl,
 		DataDB: dataDB,
 	}
+
+	mux.HandleFunc("/home", authHandler.HomeHandler) // 新增 /home 路由
 	mux.HandleFunc("/admin/login", authHandler.LoginHandler)
 	mux.HandleFunc("/admin/register", authHandler.RegisterHandler)
 

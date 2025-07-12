@@ -2,11 +2,18 @@
 <html>
 <head>
   <title>注册</title>
-<link rel="stylesheet" href="/admin/css/output.css" />
+  <link rel="stylesheet" href="/admin/css/output.css" />
 </head>
- <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
   <div class="w-full max-w-md bg-white p-8 rounded shadow-md">
     <h2 class="text-2xl font-bold text-center mb-6">注册新账号</h2>
+
+    <!-- 提示信息：默认 viewer -->
+    <div class="mb-4 bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm rounded px-4 py-3">
+      默认注册角色为 <strong>viewer</strong>，可以浏览主页和上传文章。<br>
+      如需编辑内容，请联系管理员申请权限。
+    </div>
 
     <form method="post" action="/admin/register" class="space-y-4">
       <div>
@@ -36,5 +43,6 @@
       <a href="/admin/login" class="text-blue-600 hover:underline">登录</a>
     </p>
   </div>
+
 </body>
 </html>
