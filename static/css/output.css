@@ -588,6 +588,23 @@ video {
   }
 }
 
+pre,
+    pre.chroma,
+    .highlight pre {
+  padding: 10px !important;
+  /* 加上 !important 可提高优先级 */
+  overflow-x: auto !important;
+  border-radius: 5px !important;
+}
+
+.terminal-dot.red {
+  background-color: #ff3b30;
+}
+
+.terminal-dot.green {
+  background-color: #00c800;
+}
+
 .visible {
   visibility: visible;
 }
@@ -887,6 +904,11 @@ video {
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));
 }
 
+.bg-green-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(220 252 231 / var(--tw-bg-opacity));
+}
+
 .bg-green-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(34 197 94 / var(--tw-bg-opacity));
@@ -897,6 +919,11 @@ video {
   background-color: rgb(22 163 74 / var(--tw-bg-opacity));
 }
 
+.bg-orange-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(234 88 12 / var(--tw-bg-opacity));
+}
+
 .bg-red-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(220 38 38 / var(--tw-bg-opacity));
@@ -905,16 +932,6 @@ video {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-green-100 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(220 252 231 / var(--tw-bg-opacity));
-}
-
-.bg-orange-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(234 88 12 / var(--tw-bg-opacity));
 }
 
 .bg-yellow-100 {
@@ -1052,6 +1069,11 @@ video {
   color: rgb(31 41 55 / var(--tw-text-opacity));
 }
 
+.text-green-700 {
+  --tw-text-opacity: 1;
+  color: rgb(21 128 61 / var(--tw-text-opacity));
+}
+
 .text-red-300 {
   --tw-text-opacity: 1;
   color: rgb(252 165 165 / var(--tw-text-opacity));
@@ -1070,11 +1092,6 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.text-green-700 {
-  --tw-text-opacity: 1;
-  color: rgb(21 128 61 / var(--tw-text-opacity));
 }
 
 .text-yellow-800 {
@@ -1151,6 +1168,22 @@ video {
   a-z_: .\-;
 }
 
+.before\:highlight pre::before {
+  content: var(--tw-content);
+  padding: 10px !important;
+  /* 加上 !important 可提高优先级 */
+  overflow-x: auto !important;
+  border-radius: 5px !important;
+}
+
+.after\:highlight pre::after {
+  content: var(--tw-content);
+  padding: 10px !important;
+  /* 加上 !important 可提高优先级 */
+  overflow-x: auto !important;
+  border-radius: 5px !important;
+}
+
 .hover\:bg-blue-600:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
@@ -1222,4 +1255,5 @@ video {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
 

@@ -49,3 +49,5 @@
 {{- $source := $cdn.animateCSS | default "lib/animate/animate.min.css" -}}
 {{- $options := dict "Source" $source "Fingerprint" $fingerprint "Preload" true -}}
 {{- partial "plugin/style.html" $options -}}
+
+<link rel="stylesheet" href="{{ "css/self_style.css?v=1" | relURL }}">

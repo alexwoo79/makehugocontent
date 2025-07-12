@@ -1,0 +1,54 @@
+pre,
+pre.chroma,
+.highlight pre {
+  padding: 10px !important; /* 加上 !important 可提高优先级 */
+  overflow-x: auto !important;
+  border-radius: 5px !important;
+}
+
+.terminal {
+  background-color: #1d1f21;
+  color: #c5c8c6;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  margin: 0.5rem 0; /* 调整为 0.5rem */
+}
+
+.terminal-header {
+  background-color: #282a2e;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.terminal-dot.red { background-color: #ff3b30; }
+.terminal-dot.yellow { background-color: #ffbf00; }
+.terminal-dot.green { background-color: #00c800; }
+
+.terminal-title {
+  color: #ccc;
+  font-size: 13px;
+  margin-left: 10px;
+}
+
+.terminal-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 8px; /* 调整为 8px */
+}
+
+.terminal-body pre {
+  margin: 0;
+  padding: 0 !important;
+  overflow-x: auto;
+}

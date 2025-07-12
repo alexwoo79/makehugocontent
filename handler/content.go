@@ -105,58 +105,74 @@ func (c *ContentHandler) UpdateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
+
 	r.ParseForm()
 	file := r.FormValue("filepath")
 	newContent := r.FormValue("content")
+	newContent = strings.ReplaceAll(newContent, "\r\n", "\n")
+	newContent = strings.ReplaceAll(newContent, "\r", "\n")
 
-	// 读取原始文件内容以提取 Front Matter
 	fullPath := filepath.Join(CONTENT_PATH, file)
-	originalData, err := os.ReadFile(fullPath)
+
+	// 将编辑器中的全部内容写入文件
+	err := os.WriteFile(fullPath, []byte(newContent), 0644)
 	if err != nil {
-		http.Error(w, "读取原始文件失败", 500)
+		http.Error(w, "保存失败", http.StatusInternalServerError)
 		return
 	}
 
-	// 检测 Front Matter 分隔符
-	originalLines := strings.Split(string(originalData), "\n")
-	var delimiter string
-	if len(originalLines) > 0 {
-		switch originalLines[0] {
-		case "---":
-			delimiter = "---"
-		case "+++":
-			delimiter = "+++"
-		}
-	}
-
-	var frontMatter string
-	if delimiter != "" && len(originalLines) >= 3 {
-		// 提取 Front Matter 内容
-		for i := 1; i < len(originalLines); i++ {
-			if originalLines[i] == delimiter {
-				frontMatter = strings.Join(originalLines[1:i], "\n")
-				break
-			}
-		}
-	}
-
-	// 重组内容，保留 Front Matter 和分隔符
-	var updatedContent string
-	if delimiter != "" && frontMatter != "" {
-		// 保留原有 Front Matter 并更新正文
-		updatedContent = delimiter + "\n" + frontMatter + "\n" + delimiter + "\n" + newContent
-	} else {
-		// 如果没有 Front Matter，则直接写入新内容
-		updatedContent = newContent
-	}
-
-	// 写入更新后的内容
-	err = os.WriteFile(fullPath, []byte(updatedContent), 0644)
+	// 读取保存后的文件以检查 Front Matter 分隔符
+	savedData, err := os.ReadFile(fullPath)
 	if err != nil {
-		http.Error(w, "保存失败", 500)
+		http.Error(w, "检查保存文件失败", http.StatusInternalServerError)
 		return
 	}
+
+	savedLines := strings.Split(string(savedData), "\n")
+	if len(savedLines) < 3 {
+		http.Error(w, "保存后文件格式错误，缺少 Front Matter", http.StatusInternalServerError)
+		return
+	}
+
+	// 检查第一个分隔符，忽略空行和空白
+	savedStart := -1
+	var savedDelimiter string
+	for i, line := range savedLines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "---" || trimmed == "+++" {
+			savedDelimiter = trimmed
+			savedStart = i
+			break
+		}
+		if trimmed != "" {
+			http.Error(w, "保存后文件开头缺少有效 Front Matter 分隔符", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	if savedStart == -1 || savedDelimiter == "" {
+		http.Error(w, "保存后未找到有效的 Front Matter 分隔符", http.StatusInternalServerError)
+		return
+	}
+
+	// 检查第二个分隔符
+	savedEnd := -1
+	for i := savedStart + 1; i < len(savedLines); i++ {
+		if strings.TrimSpace(savedLines[i]) == savedDelimiter {
+			savedEnd = i
+			break
+		}
+	}
+
+	if savedEnd == -1 || savedEnd <= savedStart {
+		http.Error(w, "保存后 Front Matter 结构错误：找不到结束分隔符", http.StatusInternalServerError)
+		return
+	}
+
+	// 执行 Hugo 构建
 	utils.RunHugo()
+
+	// 重定向到内容列表页面
 	http.Redirect(w, r, "/admin/content", http.StatusSeeOther)
 }
 

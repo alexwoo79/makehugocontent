@@ -6,14 +6,14 @@ description: "code高亮和样式"
 tags: []
 categories: [""]
 draft: false
+
 ---
+
 - 代码框显示效果如下：
 
-```go {linenos=inline hl_lines=[3,"6-8"]}
+```go {linenos=inline hl_lines=[3,"6-8"] style=monokai}
 package main
-
 import "fmt"
-
 func main() {
     for i := 0; i < 3; i++ {
         fmt.Println("Value of i:", i)
@@ -34,7 +34,7 @@ func main() {
 
 - 没有行号的显示方式
 
-```go {linenos=false hl_lines=[3,"6-8"] style=emacs}
+```go {linenos=false hl_lines=[3,"6-8"] style=monokai}
 package main
 
 import "fmt"
@@ -81,3 +81,7 @@ func main() {
     }
 }
 {{< /terminal >}}
+
+{{< youtube w7Ft2ymGmfc >}}
+{{< youtube M5QY2_8704o >}}
+{{< youtube 5FTrAet40Ak >}}

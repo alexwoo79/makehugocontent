@@ -1,83 +1,46 @@
---- 
-title : "测试2"
-date : "2025-06-29T21:36:28+08:00"
-author : "Alex"
-description : "This is a test post"
-tags : []
-categories : []
-draft : false
+---  
+title: "网站内容创作指南"  
+date: 2025-07-12  
+author: "Woo Alex"  
+description: "如何使用 Go + Hugo 平台进行内容创作与管理"  
+tags: ["hugo", "markdown", "go", "cms"]  
+categories: ["指南"]  
 ---
-
-# test from go 8080
-The `music` shortcode embeds a responsive music player based on [APlayer](https://github.com/MoePlayer/APlayer) and [MetingJS](https://github.com/metowolf/MetingJS).
-
-<!--more-->
-
-There are three ways to use it the `music` shortcode.
-
 ## 1 Custom Music URL {#custom-music-url}
-
 {{< version 0.2.10 >}} The complete usage of [local resource references](../theme-documentation-content#contents-organization) is supported.
-
 The `music` shortcode has the following named parameters by custom music URL:
-
 * **server** *[required]*
-
     URL of the custom music.
-
 * **name** *[optional]*
-
     Name of the custom music.
-
 * **artist** *[optional]*
-
     Artist of the custom music.
-
 * **cover** *[required]*
-
     URL of the custom music cover.
-
 Example `music` input by custom music URL:
-
 ```markdown
 {{</* music url="/music/Wavelength.mp3" name=Wavelength artist=oldmanyoung cover="/images/Wavelength.jpg" */>}}
 ```
-
 The rendered output looks like this:
-
 {{< music url="/music/Wavelength.mp3" name=Wavelength artist=oldmanyoung cover="/images/Wavelength.jpg" >}}
-
 ## 2 Music Platform URL Automatic Identification {#automatic-identification}
-
 The `music` shortcode has one named parameter by music platform URL automatic identification:
-
 * **auto** *[required]* (**first** positional parameter)
-
     URL of the music platform URL for automatic identification,
     which supports `netease`, `tencent` and `xiami` music platform.
-
 Example `music` input by music platform URL automatic identification:
-
 ```markdown
 {{</* music auto="https://music.163.com/#/playlist?id=60198" */>}}
 Or
 {{</* music "https://music.163.com/#/playlist?id=60198" */>}}
 ```
-
 The rendered output looks like this:
-
 {{< music auto="https://music.163.com/#/playlist?id=60198" >}}
-
 ## 3 Custom Server, Type and ID {#custom-server}
-
 The `music` shortcode has the following named parameters by custom music platform:
-
 * **server** *[required]* (**first** positional parameter)
-
     [`netease`, `tencent`, `kugou`, `xiami`, `baidu`]
-
     Music platform.
-
 * **type** *[required]* (**second** positional parameter)
 
     [`song`, `playlist`, `album`, `search`, `artist`]

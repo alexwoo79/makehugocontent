@@ -1,128 +1,355 @@
 ---  
-title: "网站内容创作指南"  
+title: "5353535"  
 date: 2025-07-12  
-author: "Woo Alex"  
-description: "如何使用 Go + Hugo 平台进行内容创作与管理"  
+author: "Woo eeeex"  
+description: "如何使ererer与管理"  
 tags: ["hugo", "markdown", "go", "cms"]  
 categories: ["指南"]  
-
 ---
+# 主题文档 - mermaid Shortcode
 
-# 🚀 网站内容创作指南（基于 Go + Hugo Web 平台）
 
-## 🧭 项目概述
+{{< version 0.2.11 changed >}}
 
-本系统是一个使用 Go 语言开发、结合 Hugo 静态站点生成器的内容创作平台，适合团队协作发布技术文档、博客文章或内部门户内容。系统支持多角色管理、Markdown 文本创作、部门权限控制和内容审核流程。
+`mermaid` shortcode 使用 [Mermaid](https://mermaidjs.github.io/) 库提供绘制图表和流程图的功能.
 
-## 👤 用户角色与权限说明
+<!--more-->
 
-| 角色    | 权限描述                                                                 |
-|---------|--------------------------------------------------------------------------|
-| `viewer` | 仅可浏览公共主页及归属部门文章                                          |
-| `editor` | 可上传/编辑所属部门的文章，管理自己的 Markdown 内容                    |
-| `admin`  | 拥有全部权限，包括用户管理、部门分配、内容管理、文章编辑与删除等操作    |
+[mermaid](https://mermaidjs.github.io/) 是一个可以帮助你在文章中绘制图表和流程图的库, 类似 Markdown 的语法.
 
-## 🛠️ 使用指南
+只需将你的 mermaid 代码插入 `mermaid` shortcode 中即可.
 
-### 1️⃣ 注册与登录
+## 流程图 {#flowchart}
 
-- 访问：`/admin/register`
-- 默认注册角色为 `viewer`，如需创作权限请联系管理员升级为 `editor`
-- 登录地址：`/admin/login`
-
-### 2️⃣ Markdown 内容创作流程
-
-#### Step 1: 进入上传页面
-
-- 登录后，点击「上传文章」进入 `/admin/upload`
-- 需拥有 `editor` 或 `admin` 权限
-
-#### Step 2: 填写元信息
-
-上传页面包含以下字段：
-
-- **标题 Title**
-- **作者 Author**
-- **描述 Description**
-- **标签 Tags**：用英文逗号分隔
-- **部门分类**
-- **内容 Content**：使用 Markdown 撰写，支持实时预览与图片拖拽
-
-#### Step 3: 图片上传支持
-
-- 拖入图片后会自动上传至服务器 `/uploads/`
-- 编辑器自动插入链接：
+一个 **流程图** `mermaid` 示例:
 
 ```markdown
-![示例图片](/uploads/2025/07/sample.jpg)
+{{</* mermaid */>}}
+graph LR;
+    A[Hard edge] -->|Link text| B(Round edge)
+    B --> C{Decision}
+    C -->|One| D[Result one]
+    C -->|Two| E[Result two]
+{{</* /mermaid */>}}
 ```
 
-#### Step 4: 提交发布
+呈现的输出效果如下:
 
-- 系统保存 `.md` 文件至 Hugo 内容目录
+{{< mermaid >}}
+graph LR;
+    A[Hard edge] -->|Link text| B(Round edge)
+    B --> C{Decision}
+    C -->|One| D[Result one]
+    C -->|Two| E[Result two]
+{{< /mermaid >}}
 
-路径示例：
+## 时序图 {#sequence-diagram}
 
-```
-content/posts/<部门>/<用户名>/<标题>.md
-```
+一个 **时序图** `mermaid` 示例:
 
-系统会自动触发 Hugo 构建，生成可预览页面。
-
-### 3️⃣ 内容管理
-
-- `/admin/content` 页面提供列表
-- 可编辑 / 删除已上传内容（权限控制）
-
-### 4️⃣ 用户管理（仅 admin）
-
-- 页面：`/admin/users`
-- 功能：修改角色、部门分配、用户删除
-
-### 5️⃣ 首页浏览
-
-- 所有角色均可访问主页 `/`
-- `viewer` 无法访问 `/admin/*`
-
-## 📁 内容结构
-
-```plaintext
-content/
-  posts/
-    pm/
-      alice/项目流程优化.md
-    cz/
-      bob/流程梳理.md
-    general/
-      carol/员工手册.md
+```markdown
+{{</* mermaid */>}}
+sequenceDiagram
+    participant Alice
+    participant Bob
+    Alice->>John: Hello John, how are you?
+    loop Healthcheck
+        John->John: Fight against hypochondria
+    end
+    Note right of John: Rational thoughts <br/>prevail...
+    John-->Alice: Great!
+    John->Bob: How about you?
+    Bob-->John: Jolly good!
+{{</* /mermaid */>}}
 ```
 
-## 💡 推荐流程
+呈现的输出效果如下:
 
+{{< mermaid >}}
+sequenceDiagram
+    participant Alice
+    participant Bob
+    Alice->>John: Hello John, how are you?
+    loop Healthcheck
+        John->John: Fight against hypochondria
+    end
+    Note right of John: Rational thoughts <br/>prevail...
+    John-->Alice: Great!
+    John->Bob: How about you?
+    Bob-->John: Jolly good!
+{{< /mermaid >}}
+
+## 甘特图 {#gantt}
+
+一个 **甘特图** `mermaid` 示例:
+
+```markdown
+{{</* mermaid */>}}
+gantt
+dateFormat  YYYY-MM-DD
+title Adding GANTT diagram to mermaid
+excludes weekdays 2014-01-10
+
+section A section
+Completed task            :done,    des1, 2014-01-06,2014-01-08
+Active task               :active,  des2, 2014-01-09, 3d
+Future task               :         des3, after des2, 5d
+Future task2              :         des4, after des3, 5d
+{{</* /mermaid */>}}
 ```
-注册账号 ➜ 联系管理员升级权限 ➜ 登录 ➜ 上传 Markdown ➜ 预览 ➜ 发布
+
+呈现的输出效果如下:
+
+{{< mermaid >}}
+gantt
+
+dateFormat  YYYY-MM-DD
+title Adding GANTT diagram to mermaid
+excludes weekdays 2014-01-10
+
+section A section
+Completed task            :done,    des1, 2014-01-06,2014-01-08
+Active task               :active,  des2, 2014-01-09, 3d
+Future task               :         des3, after des2, 5d
+Future task2              :         des4, after des3, 5d
+{{< /mermaid >}}
+
+## 类图 {#class-diagram}
+
+一个 **类图** `mermaid` 示例:
+
+```markdown
+{{</* mermaid */>}}
+classDiagram
+    Animal <|-- Duck
+    Animal <|-- Fish
+    Animal <|-- Zebra
+    Animal : +int age
+    Animal : +String gender
+    Animal: +isMammal()
+    Animal: +mate()
+    class Duck{
+        +String beakColor
+        +swim()
+        +quack()
+    }
+    class Fish{
+        -int sizeInFeet
+        -canEat()
+    }
+    class Zebra{
+        +bool is_wild
+        +run()
+    }
+{{</* /mermaid */>}}
 ```
 
-## 🛠 技术栈
+呈现的输出效果如下:
 
-| 技术         | 说明                             |
-|--------------|----------------------------------|
-| Go           | 后端服务开发                     |
-| SQLite       | 用户与部门信息存储               |
-| Hugo         | 静态网站生成                     |
-| Tailwind CSS | 前端样式系统                     |
-| HTMX         | 实现局部无刷新与交互             |
-| EasyMDE      | 支持图像拖拽的 Markdown 编辑器   |
+{{< mermaid >}}
+classDiagram
+    Animal <|-- Duck
+    Animal <|-- Fish
+    Animal <|-- Zebra
+    Animal : +int age
+    Animal : +String gender
+    Animal: +isMammal()
+    Animal: +mate()
+    class Duck{
+        +String beakColor
+        +swim()
+        +quack()
+    }
+    class Fish{
+        -int sizeInFeet
+        -canEat()
+    }
+    class Zebra{
+        +bool is_wild
+        +run()
+    }
+{{< /mermaid >}}
 
-## ✅ 未来计划
+## 状态图 {#state-diagram}
 
-- 内容审批机制（草稿 / 发布）
-- PDF / Word 导出
-- Hugo 分类优化
-- 多语言与主题支持
+一个 **状态图** `mermaid` 示例:
 
----
+```markdown
+{{</* mermaid */>}}
+stateDiagram-v2
+    [*] --> Still
+    Still --> [*]
+    Still --> Moving
+    Moving --> Still
+    Moving --> Crash
+    Crash --> [*]
+{{</* /mermaid */>}}
+```
 
-> 版本：v1.0  
-> 作者：Woo Alex  
-> 项目地址：[github.com/alexwoo79/makehugocontent](https://github.com/alexwoo79/makehugocontent)
+呈现的输出效果如下:
+
+{{< mermaid >}}
+stateDiagram-v2
+    [*] --> Still
+    Still --> [*]
+    Still --> Moving
+    Moving --> Still
+    Moving --> Crash
+    Crash --> [*]
+{{< /mermaid >}}
+
+## Git 图 {#git-graph}
+
+一个 **Git 图** `mermaid` 示例:
+
+```markdown
+{{</* mermaid */>}}
+gitGraph
+    commit
+    commit
+    branch develop
+    checkout develop
+    commit
+    commit
+    checkout main
+    merge develop
+    commit
+    commit
+{{</* /mermaid */>}}
+```
+
+呈现的输出效果如下:
+
+{{< mermaid >}}
+gitGraph
+    commit
+    commit
+    branch develop
+    checkout develop
+    commit
+    commit
+    checkout main
+    merge develop
+    commit
+    commit
+{{< /mermaid >}}
+
+## 实体关系图 {#entity-relationship-diagram}
+
+一个 **实体关系图** `mermaid` 示例:
+
+```markdown
+{{</* mermaid */>}}
+erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--|{ LINE-ITEM : contains
+    CUSTOMER }|..|{ DELIVERY-ADDRESS : uses
+{{</* /mermaid */>}}
+```
+
+呈现的输出效果如下:
+
+{{< mermaid >}}
+erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--|{ LINE-ITEM : contains
+    CUSTOMER }|..|{ DELIVERY-ADDRESS : uses
+{{< /mermaid >}}
+
+## 用户体验旅程图 {#user-journey}
+
+一个 **用户体验旅程图** `mermaid` 示例:
+
+```markdown
+{{</* mermaid */>}}
+journey
+    title My working day
+    section Go to work
+      Make tea: 5: Me
+      Go upstairs: 3: Me
+      Do work: 1: Me, Cat
+    section Go home
+      Go downstairs: 5: Me
+      Sit down: 5: Me
+{{</* /mermaid */>}}
+```
+
+呈现的输出效果如下:
+
+{{< mermaid >}}
+journey
+    title My working day
+    section Go to work
+      Make tea: 5: Me
+      Go upstairs: 3: Me
+      Do work: 1: Me, Cat
+    section Go home
+      Go downstairs: 5: Me
+      Sit down: 5: Me
+{{< /mermaid >}}
+
+## 饼图 {#pie}
+
+一个 **饼图** `mermaid` 示例:
+
+```markdown
+{{</* mermaid */>}}
+pie
+    "Dogs" : 386
+    "Cats" : 85
+    "Rats" : 15
+{{</* /mermaid */>}}
+```
+
+呈现的输出效果如下:
+
+{{< mermaid >}}
+pie
+    "Dogs" : 386
+    "Cats" : 85
+    "Rats" : 15
+{{< /mermaid >}}
+
+## 依赖图 {#requirement-diagram}
+
+一个 **依赖图** `mermaid` 示例:
+
+```markdown
+{{</* mermaid */>}}
+requirementDiagram
+
+requirement test_req {
+id: 1
+text: the test text.
+risk: high
+verifymethod: test
+}
+
+element test_entity {
+type: simulation
+}
+
+test_entity - satisfies -> test_req
+{{</* /mermaid */>}}
+```
+
+呈现的输出效果如下:
+
+{{< mermaid >}}
+requirementDiagram
+
+requirement test_req {
+id: 1
+text: the test text.
+risk: high
+verifymethod: test
+}
+
+element test_entity {
+type: simulation
+}
+
+test_entity - satisfies -> test_req
+{{< /mermaid >}}
+
+
