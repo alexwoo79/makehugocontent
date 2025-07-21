@@ -53,6 +53,6 @@ func main() {
 	router.RegisterRoutes(mux, tmpl, database.UserDB, database.DataDB)
 
 	// 4. 启动服务器
-	log.Println("Server started at :8080")
-	http.ListenAndServe(":8080", mux)
+	log.Println("Server started at :4000")
+	http.ListenAndServe("0.0.0.0:4000", mux)
 }
