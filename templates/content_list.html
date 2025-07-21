@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>内容管理</title>
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="/admin/css/output.css" />
+
+  <!-- ✅ 加入 DataTables CSS -->
+  <link rel="stylesheet" href="/admin/css/jquery.dataTables.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="max-w-7xl mx-auto p-4 bg-white shadow-md rounded-lg mt-6">
+    <div class="justify-between flex ">
+      <h2 class="text-2xl font-bold mb-6">Markdown 内容列表</h2>
+      <p class="flex  gap-3">
+        <a href="/admin/logout" class="inline-flex items-center px-4 py-2 outline-rose-400 text-red-300 rounded hover:bg-red-500 transition-colors duration-200">退出登录</a>
+      </p> 
+    </div>
+    <div class="justify-between flex p-2">
+      <p class="flex  gap-3">
+        <a href="/admin/upload" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors duration-200">新建文章</a>
+      </p>
+      <p class="flex  gap-3">
+        <a href="/" class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition-colors duration-200">回到主页</a>
+      </p>
+    </div>
+  
+    <div class="overflow-x-auto">
+      <!-- ✅ 给表格加 id -->
+      <table id="contentTable" class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="px-4 py-2 text-left font-medium">标题</th>
+            <th class="px-4 py-2 text-left font-medium">文件名</th>
+            <th class="px-4 py-2 text-left font-medium">作者</th>
+            <th class="px-4 py-2 text-left font-medium">时间</th>
+            <th class="px-4 py-2 text-left font-medium">操作</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {{range .}}
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-2 text-gray-800">{{.Title}}</td>
+            <td class="px-4 py-2 text-gray-700">{{.Path}}</td>
+            <td class="px-4 py-2 text-gray-700">{{.Author}}</td>
+            <td class="px-4 py-2 text-gray-600">{{.Date}}</td>
+            <td class="px-4 py-2 space-x-4">
+              <a href="/admin/edit?file={{.Path}}" class="text-blue-600 hover:underline">✏️ 编辑</a>
+              <a href="/admin/delete?file={{.Path}}"
+                 onclick="return confirm('确定要删除？')"
+                 class="text-red-600 hover:underline">🗑 删除</a>
+            </td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </div>
+    <a href="/admin/export" class="border border-red-400 text-red-500 hover:bg-red-50 px-4 py-2 rounded">📥 导出 CSV</a>
+  </div>
+
+  <!-- ✅ 引入 jQuery + DataTables JS -->
+  <script src="/admin/js/jquery-3.7.1.min.js"></script>
+  <script src="/admin/js/jquery.dataTables.min.js"></script>
+  <script>
+    // ✅ 启用排序功能
+    $(document).ready(function () {
+      $('#contentTable').DataTable({
+        order: [[3, 'desc']] // 默认按“时间”降序
+      });
+    });
+  </script>
+</body>
+</html>

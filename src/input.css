@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    pre,
+    pre.chroma,
+    .highlight pre {
+      padding: 10px !important; /* 加上 !important 可提高优先级 */
+      overflow-x: auto !important;
+      border-radius: 5px !important;
+    }
+  .terminal {
+    @apply bg-[#1d1f21] text-[#c5c8c6] font-mono rounded-lg shadow-lg overflow-hidden my-2;
+  }
+
+  .terminal-header {
+    @apply bg-[#282a2e] px-3 py-2 flex items-center gap-1.5;
+  }
+
+  .terminal-dot {
+    @apply w-3 h-3 rounded-full;
+  }
+
+  .terminal-dot.red {
+    background-color: #ff3b30;
+  }
+  .terminal-dot.yellow {
+    background-color: #ffbf00;
+  }
+  .terminal-dot.green {
+    background-color: #00c800;
+  }
+
+  .terminal-title {
+    @apply text-gray-300 text-sm ml-2.5;
+  }
+
+  .terminal-body {
+    @apply flex flex-col justify-start items-stretch p-2;
+  }
+
+  .terminal-body pre {
+    @apply m-0 p-0 overflow-x-auto;
+  }
+}
+
+

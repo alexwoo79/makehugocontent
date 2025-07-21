@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>用户管理</title>
+  <link rel="stylesheet" href="/admin/css/output.css">
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+
+  <div class="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+    <h2 class="text-3xl font-bold mb-6 text-gray-800">用户列表</h2>
+
+    <div class="overflow-x-auto rounded-lg">
+      <table class="min-w-full bg-white border border-gray-200 shadow-sm rounded-lg">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="border px-4 py-3 text-left text-sm font-semibold text-gray-600">用户名</th>
+            <th class="border px-4 py-3 text-left text-sm font-semibold text-gray-600">角色</th>
+            <th class="border px-4 py-3 text-left text-sm font-semibold text-gray-600">部门</th>
+            <th class="border px-4 py-3 text-center text-sm font-semibold text-gray-600">操作</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700">
+          {{range .Users}}
+          {{ $user := . }}
+          <tr class="hover:bg-gray-50 transition">
+            <form 
+              hx-post="/admin/update-role" 
+              hx-target="closest tr" 
+              hx-swap="outerHTML" 
+              class="contents"
+            >
+              <!-- 用户名 -->
+              <td class="border px-4 py-3">
+                {{ $user.Username }}
+                <input type="hidden" name="username" value="{{ $user.Username }}">
+              </td>
+
+              <!-- 角色 -->
+              <td class="border px-4 py-3">
+                <select name="role" class="border border-gray-300 rounded-md p-1 w-full text-sm">
+                  <option value="editor" {{if eq $user.Role "editor"}}selected{{end}}>editor</option>
+                  <option value="viewer" {{if eq $user.Role "viewer"}}selected{{end}}>viewer</option>
+                  <option value="admin"  {{if eq $user.Role "admin"}}selected{{end}}>admin</option>
+                </select>
+              </td>
+
+              <!-- 部门 -->
+              <td class="border px-4 py-3">
+                <select name="departments" multiple size="3" class="border border-gray-300 rounded-md p-1 w-full text-sm">
+                  {{range $.Departments}}
+                  {{ $dept := . }}
+                  <option value="{{$dept}}" {{if contains (index $.UserDeptMap $user.Username) $dept}}selected{{end}}>
+                    {{$dept}}
+                  </option>
+                  {{end}}
+                </select>
+              </td>
+
+              <!-- 操作 -->
+              <td class="border px-4 py-3 text-center">
+                <div class="flex justify-center gap-2">
+                  <button 
+                    type="submit"
+                    class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                  >保存</button>
+
+                  {{if ne $user.Username "admin"}}
+                  <button
+                    type="button"
+                    class="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+                    hx-post="/admin/delete-user"
+                    hx-vals='{"username": "{{ $user.Username }}"}'
+                    hx-target="closest tr"
+                    hx-swap="outerHTML"
+                    onclick="return confirm('确认删除用户 {{ $user.Username }} 吗？');"
+                  >删除</button>
+                  {{end}}
+                </div>
+              </td>
+            </form>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>

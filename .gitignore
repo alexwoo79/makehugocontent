@@ -1,4 +1,4 @@
-public/
-users.db
+hugo/public/
+data/users.db
 *.log
 *.exe

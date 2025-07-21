@@ -1,8 +1,14 @@
 module makehugocontent
 
-go 1.24.3
+go 1.20
 
 require (
-	github.com/mattn/go-sqlite3 v1.14.28
-	golang.org/x/crypto v0.39.0
+	github.com/adrg/frontmatter v0.2.0
+	github.com/mattn/go-sqlite3 v1.14.20
+	golang.org/x/crypto v0.20.0
+)
+
+require (
+	github.com/BurntSushi/toml v1.5.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

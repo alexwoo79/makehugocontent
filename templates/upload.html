@@ -1,169 +1,273 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>发布文章</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous" />
-    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>发布文章</title>
+  <link rel="stylesheet" href="/admin/css/output.css" />
+  <link rel="stylesheet" href="/admin/css/github-markdown.css" />
+  <!-- Markdown 编辑器所需库 -->
+  <script src="/admin/js/marked.min.js"></script>
+  <script src="/admin/js/easymde.min.js"></script>
+  <link rel="stylesheet" href="/admin/css/easymde.min.css">
+  <!-- Font Awesome 图标本地样式 -->
+  <link rel="stylesheet" href="/admin/css/fontawesome.min.css">
+  <!-- 若字体文件不在默认路径，请添加如下样式覆盖字体路径 -->
+  <style>
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  font-display: block;
+  src: url('/admin/webfonts/fa-solid-900.woff2') format('woff2'),
+       url('/admin/webfonts/fa-solid-900.ttf') format('truetype');
+}
+</style>
+  <!-- <link rel="stylesheet" href="<canvas id="">s/github-markdown.css"> -->
+  <link rel="stylesheet" href="/admin/css/vue.css"></link>
+  <!-- 代码高亮样式（GitHub 主题） -->
+  <link rel="stylesheet" href="/admin/css/github.min.css">
+  <script src="/admin/js/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  <!-- KaTeX 数学公式支持 -->
+  <link rel="stylesheet" href="/admin/css/katex.min.css">
+  <script src="/admin/js/katex.min.js"></script>
+  <script src="/admin/js/auto-render.min.js"></script>
+
 </head>
 
-<body>
-    <div class="container">
-        <div class="row">
-            <div class="col text-end">
-                <h2>新建文章</h2>
-            </div>
-            <div class="col text-end">
-                <a href="/admin/logout" class="btn btn-outline-danger">退出</a>
-            </div>
-        </div>
+<body class="bg-gray-50 min-h-screen">
 
-        <h5>Front Matter 信息</h5>
-        <form method="post" action="/admin/upload">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm">
-                        <div class="mb-3 row">
-                            <label for="subfolder" class="col-md-2 col-form-label text-center">子目录</label>
-                            <div class="col-md-8">
-                                <input type="text" name="subfolder" id="subfolder" class="form-control"
-                                    placeholder="content 子文件夹，默认为 posts" />
-                            </div>
-                        </div>
+  <div class="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+    <!-- 页眉 -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-3xl font-bold">新建文章</h2>
+     
 
-                        <div class="mb-3 row">
-                            <label for="filename" class="col-md-2 col-form-label text-center">文件名</label>
-                            <div class="col-md-8">
-                                <input type="text" name="filename" id="filename" class="form-control" required
-                                    placeholder="无扩展名（如：my-post）" />
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label for="category" class="col-md-2 col-form-label text-center">分类</label>
-                            <div class="col-md-8">
-                                <input type="text" name="category" id="category" class="form-control"
-                                    placeholder="可选，例如：技术、随笔" />
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label for="draft" class="col-md-2 col-form-label text-center">草稿</label>
-                            <div class="col-md-4 d-flex align-items-center">
-                                <input class="form-check-input" type="checkbox" name="draft" id="draft" value="true" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm">
-                        <div class="mb-3 row">
-                            <label for="title" class="col-md-2 col-form-label text-center">标题</label>
-                            <div class="col-md-8">
-                                <input type="text" name="title" id="title" class="form-control" required />
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label for="author" class="col-md-2 col-form-label text-center">作者</label>
-                            <div class="col-md-8">
-                                <input type="text" name="author" id="author" class="form-control" required />
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label for="description" class="col-md-2 col-form-label text-center">简介</label>
-                            <div class="col-md-8">
-                                <input type="text" name="description" id="description" class="form-control"
-                                    placeholder="可选，文章简要描述" />
-                            </div>
-                        </div>
-
-                        <div class="mb-3 row">
-                            <label for="tags" class="col-md-2 col-form-label text-center">标签</label>
-                            <div class="col-md-8">
-                                <input type="text" name="tags" id="tags" class="form-control"
-                                    placeholder="英文逗号分隔，如：tech,go,hugo" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <label for="body" class="col-md-1 col-form-label text-center">正文内容</label>
-                    <div class="col-md-10">
-                        <textarea name="body" id="body" class="form-control" rows="10"></textarea>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-md-8 offset-md-1 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            提交文章并构建
-                        </button>
-                        <button type="button" onclick="previewMarkdown()" class="btn btn-outline-secondary">
-                            预览
-                        </button>
-                        <button type="button" onclick="uploadImage()" class="btn btn-outline-secondary">
-                            上传图片
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
-
-        <div id="preview-area">
-            <h3>预览效果：</h3>
-            <div id="preview-content"></div>
-        </div>
-
-        <script>
-            const editor = new EasyMDE({
-                element: document.getElementById("body"),
-            });
-
-            function previewMarkdown() {
-                const title = document.getElementById("title").value;
-                const author = document.getElementById("author").value;
-                const description = document.getElementById("description").value;
-                const tags = document.getElementById("tags").value;
-                const body = editor.value();
-
-                const frontMatter = `# ${title}\n**作者**: ${author}  \n**简介**: ${description}  \n**标签**: ${tags}\n\n---\n\n`;
-                document.getElementById("preview-content").innerHTML = marked.parse(
-                    frontMatter + body
-                );
-            }
-
-            function uploadImage() {
-                const fileInput = document.createElement("input");
-                fileInput.type = "file";
-                fileInput.accept = "image/*";
-                fileInput.onchange = () => {
-                    const file = fileInput.files[0];
-                    const formData = new FormData();
-                    formData.append("image", file);
-
-                    fetch("/api/upload-image", {
-                        method: "POST",
-                        body: formData,
-                    })
-                        .then((res) => res.text())
-                        .then((url) => {
-                            editor.codemirror.replaceSelection(`![](${url})`);
-                        })
-                        .catch((err) => alert("上传失败: " + err));
-                };
-                fileInput.click();
-            }
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
-            crossorigin="anonymous"></script>
-        <p><a href="/">返回主页</a></p>
+      <a href="/admin/content"
+         class="border border-red-400 text-red-500 hover:bg-red-50 px-4 py-2 rounded">
+        返回管理
+      </a>
     </div>
+
+    <!-- Front‑Matter 信息 -->
+    <h5 class="text-lg font-semibold mb-4">Front&nbsp;Matter 信息</h5>
+
+    <form method="post" action="/admin/upload" class="space-y-6">
+      <!-- 双栏网格 -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- 左栏 -->
+        <div class="space-y-4">
+          <!-- 子目录 -->
+          <div>
+            <label for="subfolder" class="block text-sm font-medium mb-1">子目录</label>
+            <input id="subfolder" name="subfolder" type="text"
+                   placeholder="content 子文件夹，默认为 posts"
+                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />
+          </div>
+
+          <!-- 文件名 -->
+          <div>
+            <label for="filename" class="block text-sm font-medium mb-1">文件名 <span class="text-red-600">*</span></label>
+            <input id="filename" name="filename" type="text" required
+                   placeholder="无扩展名（如：my-post）"
+                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />
+          </div>
+
+          <!-- 分类 -->
+          <div>
+            <label for="category" class="block text-sm font-medium mb-1">分类</label>
+            <input id="category" name="category" type="text"
+                   placeholder="可选，例如：技术、随笔"
+                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />
+          </div>
+
+          <!-- 草稿 -->
+          <div class="flex items-center gap-2">
+            <input id="draft" name="draft" type="checkbox" value="true"
+                   class="h-4 w-4 text-blue-600 border-gray-300 rounded" />
+            <label for="draft" class="text-sm">草稿</label>
+          </div>
+        </div>
+
+        <!-- 右栏 -->
+        <div class="space-y-4">
+          <!-- 标题 -->
+          <div>
+            <label for="title" class="block text-sm font-medium mb-1">标题 <span class="text-red-600">*</span></label>
+            <input id="title" name="title" type="text" required
+                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />
+          </div>
+
+          <!-- 作者 -->
+          <div>
+            <label for="author" class="block text-sm font-medium mb-1">作者 <span class="text-red-600">*</span></label>
+            <input id="author" name="author" type="text" required
+                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />
+          </div>
+
+          <!-- 简介 -->
+          <div>
+            <label for="description" class="block text-sm font-medium mb-1">简介</label>
+            <input id="description" name="description" type="text"
+                   placeholder="可选，文章简要描述"
+                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />
+          </div>
+
+          <!-- 标签 -->
+          <div>
+            <label for="tags" class="block text-sm font-medium mb-1">标签</label>
+            <input id="tags" name="tags" type="text"
+                   placeholder="英文逗号分隔，如：tech,go,hugo"
+                   class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 正文内容 -->
+      <div>
+        <label for="body" class="block text-sm font-medium mb-2">正文内容</label>
+        <textarea id="body" name="body" rows="25" class="markdown-body"></textarea>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="flex flex-wrap gap-3">
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
+          提交文章并构建
+        </button>
+
+        <button type="button" onclick="previewMarkdown()"
+                class="border border-gray-300 text-gray-700 hover:bg-gray-50 py-2 px-4 rounded">
+          预览
+        </button>
+
+        <button type="button" onclick="uploadImage()"
+                class="border border-gray-300 text-gray-700 hover:bg-gray-50 py-2 px-4 rounded">
+          上传图片
+        </button>
+      </div>
+    </form>
+
+    <!-- 预览区域 -->
+    <div id="preview-area" class="mt-10">
+      <h3 class="text-xl font-semibold mb-2">预览效果：</h3>
+      <div id="preview-content" class="markdown-body"></div>
+    </div>
+
+    <!-- 返回主页 -->
+<p class="text-center mt-8">
+      <a href="/" class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition-colors duration-200">回到主页</a>
+     </p>
+  </div>
+
+  <!-- 脚本：EasyMDE & 功能函数 -->
+  <script>
+    const editor = new EasyMDE({
+    element: document.getElementById("body"),
+    spellChecker:true,
+    autofocus:true,
+    promptURLs:true,
+    autoDownloadFontAwesome:false,
+    previewRender: function(plainText, previewEl) {
+    // 使用 marked 渲染 Markdown
+    const html = marked.parse(plainText);
+    previewEl.classList.add("markdown-body");
+    // 放入 preview 面板
+    previewEl.innerHTML = html;
+
+    // 渲染 KaTeX 数学公式
+    renderMathInElement(previewEl, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: true},
+        {left: "\\[", right: "\\]", display: true},
+        {left: "\\(", right: "\\)", display: false},
+      ]
+    });
+    previewEl.querySelectorAll("pre code").forEach(block => {
+            hljs.highlightElement(block);
+        });
+    return previewEl.innerHTML;
+
+  },
+});
+
+  function previewMarkdown() {
+    const title = document.getElementById("title").value;
+    const author = document.getElementById("author").value;
+    const description = document.getElementById("description").value;
+    const tags = document.getElementById("tags").value;
+    const body = editor.value();
+
+    const frontMatter = `
+# ${title}
+**作者**: ${author}  
+**简介**: ${description}  
+**标签**: ${tags}
+\n
+---
+
+`;
+
+    const html = marked.parse(frontMatter + body);
+    const previewEl = document.getElementById("preview-content");
+    previewEl.innerHTML = html;
+
+    // 触发 KaTeX 渲染数学公式
+    renderMathInElement(previewEl, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false},
+        {left: "\\[", right: "\\]", display: true},
+        {left: "\\(", right: "\\)", display: false},
+      ]
+    });
+  }
+
+  function uploadImage() {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.onchange = () => {
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("image", file);
+
+      fetch("/api/upload-image", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.text())
+      .then(url => editor.codemirror.replaceSelection(`![](${url})`))
+      .catch(err => alert("上传失败: " + err));
+    };
+    fileInput.click();
+  }
+
+    // 添加拖拽处理
+    const cmWrapper = editor.codemirror.getWrapperElement();
+
+    cmWrapper.addEventListener("dragover", (e) => {
+      e.preventDefault(); // 必须阻止默认，否则 drop 不触发
+    });
+
+    // 统一处理拖拽上传的逻辑
+    cmWrapper.addEventListener("drop", async (e) => {
+      e.preventDefault();
+
+      const file = e.dataTransfer.files[0];
+
+      // 仅处理 .md 文件
+      if (file instanceof File && file.name.endsWith(".md")) {
+        const text = await file.text();
+        editor.value(text);
+      }
+    });
+</script>
+
 </body>
 
 </html>

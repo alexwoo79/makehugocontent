@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>编辑文章</title>
+      <link rel="stylesheet" href="/admin/css/output.css" />
+  <link rel="stylesheet" href="/admin/css/github-markdown.css" />
+  <!-- Markdown 编辑器所需库 -->
+  <script src="/admin/js/marked.min.js"></script>
+  <script src="/admin/js/easymde.min.js"></script>
+  <link rel="stylesheet" href="/admin/css/easymde.min.css">
+  <!-- Font Awesome 图标本地样式 -->
+  <link rel="stylesheet" href="/admin/css/fontawesome.min.css">
+  <!-- 若字体文件不在默认路径，请添加如下样式覆盖字体路径 -->
+  <style>
+@font-face {
+  font-family: 'Font Awesome 6 Free';
+  font-style: normal;
+  font-weight: 900;
+  font-display: block;
+  src: url('/admin/webfonts/fa-solid-900.woff2') format('woff2'),
+       url('/admin/webfonts/fa-solid-900.ttf') format('truetype');
+}
+</style>
+  <!-- <link rel="stylesheet" href="<canvas id="">s/github-markdown.css"> -->
+  <link rel="stylesheet" href="/admin/css/vue.css"></link>
+  <!-- 代码高亮样式（GitHub 主题） -->
+  <link rel="stylesheet" href="/admin/css/github.min.css">
+  <script src="/admin/js/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  <!-- KaTeX 数学公式支持 -->
+  <link rel="stylesheet" href="/admin/css/katex.min.css">
+  <script src="/admin/js/katex.min.js"></script>
+  <script src="/admin/js/auto-render.min.js"></script>
+  </head>
+
+  <body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-bold">编辑</h2>
+        <a href="/admin/content"
+          class="border border-red-400 text-red-500 hover:bg-red-50 px-4 py-2 rounded">
+          返回管理
+        </a>
+      </div>
+      <div class="mt-4">
+        <form method="post" action="/admin/update" class="space-y-2">
+          <input type="hidden" name="filepath" value="{{.FilePath}}" />
+          <!-- 确保 class 名称和 CSS 规则匹配 -->
+          <textarea id="body" name="content" rows="25" class="markdown-body">{{.Content}}</textarea>
+
+          <div class="flex items-center justify-between mb-6">
+            <button
+              type="submit"
+              class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
+              onclick="alert('文章正在保存...')">
+              保存修改
+            </button>
+            <a
+              href="/admin/content"
+              class="border border-red-400 text-red-500 hover:bg-red-50 px-4 py-2 rounded">
+              返回管理
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+<script src="/admin/js/marked.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const editor = new EasyMDE({
+      element: document.getElementById("body"),
+      spellChecker: false,
+      autofocus: true,
+      promptURLs: true,
+      previewRender: function (plainText) {
+        const html = marked.parse(plainText);
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html;
+
+        renderMathInElement(tempDiv, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false },
+            { left: "\\[", right: "\\]", display: true },
+            { left: "\\(", right: "\\)", display: false }
+          ]
+        });
+        return `<div class="markdown-body">${tempDiv.innerHTML}</div>`;
+      }
+    });
+  });
+
+</script>
+
+  </body>
+</html>
