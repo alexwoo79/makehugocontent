@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"log"
 
-	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
+	_ "modernc.org/sqlite" // 使用 modernc.org 的 SQLite 驱动
 )
 
 var (
@@ -15,7 +15,7 @@ var (
 
 func Init() {
 	var err error
-	UserDB, err = sql.Open("sqlite3", "./database/users.db")
+	UserDB, err = sql.Open("sqlite", "./database/users.db")
 	if err != nil {
 		log.Fatal("用户数据库打开失败:", err)
 	}
@@ -71,7 +71,7 @@ func Init() {
 		log.Fatal("管理员插入失败:", err)
 	}
 
-	DataDB, err = sql.Open("sqlite3", "./database/data.db")
+	DataDB, err = sql.Open("sqlite", "./database/data.db")
 	if err != nil {
 		log.Fatal("文章列表数据库打开失败:", err)
 	}
