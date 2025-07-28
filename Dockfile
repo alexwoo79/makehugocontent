@@ -1,0 +1,27 @@
+FROM golang:alpine AS builder
+
+# 安装 curl 用于下载 Hugo
+RUN apk add --no-cache curl
+WORKDIR /app
+COPY . .
+ENV GOPROXY=https://goproxy.cn,direct
+
+# 下载 Hugo 二进制（根据系统架构修改）
+RUN curl -L -o hugo.tar.gz https://github.com/gohugoio/hugo/releases/download/v0.148.2/hugo_0.148.2_Linux-64bit.tar.gz && \
+ mkdir /tmp/hugo && \
+ tar -zxvf hugo.tar.gz -C /tmp/hugo && \
+mv /tmp/hugo/hugo /usr/local/bin/hugo && \
+chmod +x /usr/local/bin/hugo && \
+rm -rf  /tmp/hugo
+
+RUN go mod tidy && go build -o make-hugo-content main.go
+
+
+# 运行阶段
+FROM alpine:latest
+COPY --from=builder /app/make-hugo-content /app/make-hugo-content
+COPY --from=builder /usr/local/bin/hugo /usr/local/bin/hugo
+WORKDIR /content
+EXPOSE 4000
+VOLUME ["/content"]
+ENTRYPOINT ["/app/make-hugo-content"]
